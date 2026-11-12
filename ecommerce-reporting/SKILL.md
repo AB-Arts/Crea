@@ -78,7 +78,15 @@ node <SKILL>/scripts/build-report.mjs --dataset reporting/<slug>/dataset.json --
 
 Sortie par défaut : `reporting/<slug>/dashboard-2026-W45.html` (≈ 450 Ko). Le fichier embarque toutes les semaines : l'utilisateur peut naviguer de semaine en semaine (sélecteur, flèches ◀ ▶ ou touches ← →, clic sur le graphique). L'analyse rédigée s'affiche uniquement sur la semaine à laquelle elle se rapporte.
 
-### 5. Vérifier et livrer
+### 5. (Option) Exporter les données vers Excel / Google Sheets
+
+```bash
+node <SKILL>/scripts/export-xlsx.mjs --dataset reporting/<slug>/dataset.json
+```
+
+Produit `<slug>-reporting-data.xlsx` (onglets Lisez-moi, Hebdo, Catégories, Canaux, Pays, Produits, Catalogue, Objectifs), avec exactement les chiffres du dashboard. Pour un Google Sheet existant : déposer le fichier sur le Drive, puis dans le Sheet Fichier › Importer › Drive › « Remplacer la feuille de calcul » (le lien du Sheet ne change pas).
+
+### 6. Vérifier et livrer
 
 - Ouvre le fichier dans le navigateur intégré et contrôle au moins : la vue d'ensemble, la cascade, le compte de résultat, l'absence d'erreur console.
 - Export PDF : bouton imprimante du dashboard (impression navigateur, thème clair forcé).
@@ -130,6 +138,7 @@ Les noms de boutique et de produits des profils de test doivent être inventés 
 - `scripts/lib/weeks.mjs`, `scripts/lib/rng.mjs` : semaines ISO, aléatoire déterministe.
 - `templates/dashboard.html` : gabarit du dashboard à la charte AB-Arts (bandeau sombre, accent ember, Geist / Geist Mono, graphiques SVG faits main, sans bibliothèque).
 - `assets/fonts/geist-fontface.css`, `assets/ab-arts-logo.png` : polices et logo AB-Arts, embarqués dans le HTML à la construction.
+- `scripts/export-xlsx.mjs` : export du dataset en classeur Excel (sans dépendance), importable dans Google Sheets.
 - `scripts/serve.mjs` : petit serveur local pour prévisualiser les rapports (`node scripts/serve.mjs reporting/<slug>`).
 - `profiles/demo-mode.json` : profil de démonstration.
 - `examples/demo-mode/` : dataset, analyse et dashboard d'exemple (semaine 2026-W45).
