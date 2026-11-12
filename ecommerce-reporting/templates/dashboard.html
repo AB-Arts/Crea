@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-2: #f2f1ed;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #76746e;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.10);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+  --cmp: #a19f97;
+  --wash: rgba(42, 120, 214, 0.10);
+  --good-ink: #006300;
+  --bad-ink: #c22f2f;
+  --st-good: #0ca30c; --st-warning: #fab219; --st-serious: #ec835a; --st-critical: #d03b3b;
+  --f1: #86b6ef; --f2: #5598e7; --f3: #2a78d6; --f4: #1c5cab;
+  --shadow: 0 1px 2px rgba(11, 11, 11, 0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --cmp: #6f6d66; --wash: rgba(57, 135, 229, 0.14);
+    --good-ink: #2fbf2f; --bad-ink: #ee7b7b;
+    --f1: #6da7ec; --f2: #3987e5; --f3: #256abf; --f4: #184f95;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255, 255, 255, 0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --cmp: #6f6d66; --wash: rgba(57, 135, 229, 0.14);
+  --good-ink: #2fbf2f; --bad-ink: #ee7b7b;
+  --f1: #6da7ec; --f2: #3987e5; --f3: #256abf; --f4: #184f95;
+  --shadow: none;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 120px; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+button, select { font: inherit; color: inherit; }
+a { color: inherit; }
+.num, td.n, th.n { font-variant-numeric: tabular-nums; }
+
+/* ---------- Barre supérieure ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--page) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+  max-width: 1320px; margin: 0 auto; padding: 12px 24px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px;
+}
+.brand { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.brand-name { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.brand-sub { color: var(--ink-2); font-size: 12.5px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--st-warning) 22%, transparent);
+  color: var(--ink);
+}
+.picker { display: flex; align-items: center; gap: 6px; }
+.picker select {
+  appearance: none; -webkit-appearance: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 30px 7px 12px; min-width: 230px; cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%), linear-gradient(135deg, var(--ink-2) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 52%, calc(100% - 10px) 52%;
+  background-size: 5px 5px; background-repeat: no-repeat;
+}
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; display: inline-grid; place-items: center;
+}
+.icon-btn:hover, .picker select:hover { background: var(--surface-2); }
+.icon-btn:disabled { opacity: 0.4; cursor: default; }
+.icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.actions { display: flex; gap: 6px; }
+
+.sections {
+  max-width: 1320px; margin: 0 auto; padding: 0 24px;
+  display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none;
+}
+.sections a {
+  text-decoration: none; color: var(--ink-2); font-weight: 550; font-size: 13px;
+  padding: 8px 12px 10px; border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.sections a:hover { color: var(--ink); }
+.sections a.active { color: var(--ink); border-bottom-color: var(--s1); }
+
+/* ---------- Mise en page ---------- */
+main { max-width: 1320px; margin: 0 auto; padding: 24px 24px 48px; }
+section { margin-bottom: 40px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 14px; flex-wrap: wrap; }
+.section-head h2 { font-size: 20px; font-weight: 650; letter-spacing: -0.015em; margin: 0; }
+.section-head p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.grid { display: grid; gap: 16px; }
+.g-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g-3-2 { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.g-2-3 { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+@media (max-width: 980px) { .g-2, .g-3-2, .g-2-3 { grid-template-columns: minmax(0, 1fr); } }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; box-shadow: var(--shadow); min-width: 0;
+}
+.card h3 { margin: 0; font-size: 14.5px; font-weight: 620; }
+.card .sub { margin: 2px 0 0; color: var(--ink-2); font-size: 12.5px; }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* ---------- Héros ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.hero-label { color: var(--ink-2); font-size: 13px; font-weight: 550; }
+.hero-value { font-size: 52px; line-height: 1.05; font-weight: 650; letter-spacing: -0.03em; margin: 6px 0 10px; }
+@media (max-width: 520px) { .hero-value { font-size: 42px; } }
+.hero-deltas { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.hero-mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--grid); }
+.hero-mini div span { display: block; color: var(--ink-2); font-size: 12px; }
+.hero-mini div strong { font-size: 17px; font-weight: 620; }
+.ytd h4 { margin: 0 0 4px; font-size: 13px; font-weight: 600; }
+.ytd .big { font-size: 26px; font-weight: 650; letter-spacing: -0.02em; }
+.meter { position: relative; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--s1) 18%, var(--surface)); margin: 14px 0 6px; }
+.meter > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: var(--s1); }
+.meter > b { position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--ink); border-radius: 1px; }
+.meter-legend { display: flex; justify-content: space-between; color: var(--ink-2); font-size: 12px; gap: 8px; flex-wrap: wrap; }
+.ytd-lines { margin-top: 14px; display: grid; gap: 6px; font-size: 13px; }
+.ytd-lines div { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed transparent; }
+.ytd-lines span { color: var(--ink-2); }
+
+/* ---------- Deltas ---------- */
+.delta { display: inline-flex; align-items: baseline; gap: 4px; font-size: 12.5px; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.delta .arrow { font-size: 9px; transform: translateY(-1px); }
+.delta.good { color: var(--good-ink); }
+.delta.bad { color: var(--bad-ink); }
+.delta.flat { color: var(--ink-2); }
+.delta .vs { color: var(--muted); font-weight: 450; }
+
+/* ---------- Tuiles ---------- */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+@media (max-width: 860px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 400px) { .tiles { grid-template-columns: minmax(0, 1fr); } }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tile-label { color: var(--ink-2); font-size: 12.5px; font-weight: 550; }
+.tile-value { font-size: 24px; font-weight: 650; letter-spacing: -0.02em; }
+.tile-note { color: var(--muted); font-size: 12px; }
+.tile-deltas { display: flex; flex-direction: column; gap: 1px; margin-top: 2px; }
+.tile svg.spark { margin-top: 8px; width: 100%; height: 30px; display: block; overflow: visible; }
+
+/* ---------- Graphiques ---------- */
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chart .grid-line { stroke: var(--grid); stroke-width: 1; }
+.chart .base-line { stroke: var(--axis); stroke-width: 1; }
+.chart .label-strong { fill: var(--ink); font-weight: 600; }
+.chart .label-2 { fill: var(--ink-2); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+.legend i.line { height: 3px; width: 16px; border-radius: 2px; }
+.hit { cursor: pointer; }
+
+#tooltip {
+  position: fixed; z-index: 50; pointer-events: none; opacity: 0; transition: opacity 0.08s;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16); padding: 10px 12px; font-size: 12.5px; min-width: 180px; max-width: 300px;
+}
+#tooltip .tt-title { font-weight: 620; margin-bottom: 2px; }
+#tooltip .tt-sub { color: var(--ink-2); font-size: 11.5px; margin-bottom: 6px; }
+#tooltip .tt-row { display: flex; align-items: center; gap: 8px; justify-content: space-between; padding: 1px 0; }
+#tooltip .tt-row > span:first-child { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+#tooltip .tt-row b { font-weight: 600; font-variant-numeric: tabular-nums; }
+#tooltip .tt-row.total { border-top: 1px solid var(--grid); margin-top: 4px; padding-top: 4px; }
+#tooltip i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; }
+
+/* ---------- Tableaux ---------- */
+.table-wrap { overflow-x: auto; margin: 0 -4px; padding: 0 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 550; color: var(--ink-2); font-size: 12px; padding: 8px 10px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+td { padding: 7px 10px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th.n, td.n { text-align: right; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: color-mix(in srgb, var(--s1) 5%, transparent); }
+.pnl td:first-child { white-space: normal; min-width: 220px; }
+.pnl tr.total td { font-weight: 650; background: var(--surface-2); }
+.pnl tr.result td { font-weight: 700; background: color-mix(in srgb, var(--s1) 12%, var(--surface)); }
+.pnl tr.detail td { color: var(--ink-2); font-size: 12.5px; }
+.pnl tr.detail td:first-child { padding-left: 28px; }
+.pnl tr.group td:first-child { cursor: pointer; }
+.pnl tr.group td:first-child::before { content: "▸"; display: inline-block; width: 14px; color: var(--muted); transition: transform 0.15s; }
+.pnl tr.group.open td:first-child::before { transform: rotate(90deg); }
+.pnl tr.detail.hidden { display: none; }
+.pnl th.sep, .pnl td.sep { border-left: 1px solid var(--grid); }
+.muted { color: var(--muted); }
+.ink2 { color: var(--ink-2); }
+.bar-cell { display: flex; align-items: center; gap: 10px; min-width: 160px; }
+.bar-cell .track { flex: 1; height: 10px; position: relative; }
+.bar-cell .track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; background: var(--s1); min-width: 2px; }
+.bar-cell .val { min-width: 74px; text-align: right; font-variant-numeric: tabular-nums; }
+.rank { color: var(--muted); width: 28px; }
+.prod-name { font-weight: 550; }
+.prod-sku { color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+
+/* ---------- Faits marquants ---------- */
+.insights { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.insights li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; }
+.st-icon { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; margin-top: 1px; }
+.st-icon.good { background: var(--st-good); }
+.st-icon.warning { background: var(--st-warning); color: #0b0b0b; }
+.st-icon.critical { background: var(--st-critical); }
+.st-icon.info { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--border); }
+.st-label { font-size: 11px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-2); margin-right: 6px; }
+.notes { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--grid); }
+.notes h4 { margin: 0 0 6px; font-size: 13.5px; }
+.notes .note-meta { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+.notes p, .notes ul { margin: 0 0 8px; }
+.notes ul { padding-left: 18px; }
+
+/* ---------- Entonnoir ---------- */
+.funnel { display: grid; gap: 12px; }
+.funnel-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 90px; gap: 12px; align-items: center; }
+.funnel-row .f-label { font-size: 13px; font-weight: 550; }
+.funnel-row .f-label small { display: block; color: var(--muted); font-weight: 450; font-size: 11.5px; }
+.funnel-row .f-bar { height: 26px; border-radius: 4px; min-width: 3px; }
+.funnel-row .f-val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 520px) { .funnel-row { grid-template-columns: 96px minmax(0, 1fr) 70px; } }
+
+details.data-table { margin-top: 12px; }
+details.data-table summary { cursor: pointer; color: var(--ink-2); font-size: 12.5px; font-weight: 550; }
+details.data-table .table-wrap { max-height: 320px; overflow: auto; margin-top: 8px; }
+
+footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+
+@media (max-width: 640px) {
+  .topbar-inner, .sections, main, footer { padding-left: 16px; padding-right: 16px; }
+  .picker { width: 100%; }
+  .picker select { flex: 1; min-width: 0; }
+  .card { padding: 16px; }
+}
+@media print {
+  :root, :root[data-theme] {
+    color-scheme: light;
+    --page: #ffffff; --surface: #ffffff; --surface-2: #f2f1ed; --ink: #0b0b0b; --ink-2: #52514e; --muted: #76746e;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11, 11, 11, 0.14);
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --cmp: #a19f97;
+    --good-ink: #006300; --bad-ink: #c22f2f; --f1: #86b6ef; --f2: #5598e7; --f3: #2a78d6; --f4: #1c5cab;
+  }
+  .topbar { position: static; backdrop-filter: none; }
+  .sections, .actions, .picker .icon-btn, details.data-table { display: none; }
+  .card, .tile { break-inside: avoid; box-shadow: none; }
+  section { break-before: auto; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-name"><span id="shop-name"></span><span class="badge" id="source-badge" hidden>Données factices</span></div>
+      <div class="brand-sub" id="shop-sub"></div>
+    </div>
+    <div class="picker">
+      <button class="icon-btn" id="prev-week" aria-label="Semaine précédente" title="Semaine précédente"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <select id="week-select" aria-label="Semaine du rapport"></select>
+      <button class="icon-btn" id="next-week" aria-label="Semaine suivante" title="Semaine suivante"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+    <div class="actions">
+      <button class="icon-btn" id="theme-btn" aria-label="Changer de thème" title="Thème clair / sombre"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <button class="icon-btn" id="print-btn" aria-label="Imprimer ou exporter en PDF" title="Imprimer / PDF"><svg viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></button>
+    </div>
+  </div>
+  <nav class="sections" id="section-nav">
+    <a href="#overview" class="active">Vue d'ensemble</a>
+    <a href="#profit">Rentabilité</a>
+    <a href="#sales">Ventes</a>
+    <a href="#acquisition">Acquisition</a>
+    <a href="#customers">Clients</a>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= VUE D'ENSEMBLE ================= -->
+  <section id="overview">
+    <div class="section-head"><h2>Vue d'ensemble</h2><p id="period-text"></p></div>
+
+    <div class="card hero">
+      <div>
+        <div class="hero-label">Chiffre d'affaires net HT de la semaine</div>
+        <div class="hero-value" id="hero-value"></div>
+        <div class="hero-deltas" id="hero-deltas"></div>
+        <div class="hero-mini" id="hero-mini"></div>
+      </div>
+      <div class="ytd" id="ytd"></div>
+    </div>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="grid g-3-2">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>CA net HT par semaine</h3><p class="sub">52 dernières semaines · cliquer sur une semaine pour l'afficher</p></div>
+          <div class="legend" id="legend-revenue"></div>
+        </div>
+        <div class="chart" id="chart-revenue" role="img" aria-label="Évolution du chiffre d'affaires net HT hebdomadaire sur 52 semaines"></div>
+        <details class="data-table"><summary>Voir les données en tableau</summary><div class="table-wrap" id="table-revenue"></div></details>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>Faits marquants</h3><p class="sub">Détection automatique et analyse de la semaine</p></div></div>
+        <ul class="insights" id="insights"></ul>
+        <div class="notes" id="notes" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RENTABILITÉ ================= -->
+  <section id="profit">
+    <div class="section-head"><h2>Rentabilité</h2><p>Du chiffre d'affaires au résultat d'exploitation</p></div>
+    <div class="grid g-2">
+      <div class="card">
+        <div class="card-head"><div><h3>Cascade de la semaine</h3><p class="sub">CA net HT → résultat d'exploitation</p></div></div>
+        <div class="chart" id="chart-waterfall" role="img" aria-label="Cascade du chiffre d'affaires au résultat"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Taux de marge</h3><p class="sub">En % du CA net HT · 52 semaines</p></div>
+          <div class="legend" id="legend-margins"></div>
+        </div>
+        <div class="chart" id="chart-margins" role="img" aria-label="Évolution des taux de marge"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><div><h3>Compte de résultat</h3><p class="sub">Montants HT · cliquer sur Marketing ou Frais fixes pour le détail</p></div></div>
+      <div class="table-wrap"><table class="pnl" id="pnl"></table></div>
+    </div>
+  </section>
+
+  <!-- ================= VENTES ================= -->
+  <section id="sales">
+    <div class="section-head"><h2>Ventes</h2><p>Catégories, produits et pays</p></div>
+    <div class="card">
+      <div class="card-head"><div><h3>Ventes par catégorie</h3><p class="sub">CA net HT de la semaine, après retours</p></div></div>
+      <div class="table-wrap"><table id="categories"></table></div>
+    </div>
+    <div class="grid g-3-2" style="margin-top:16px">
+      <div class="card">
+        <div class="card-head"><div><h3>Top 10 produits</h3><p class="sub">CA HT avant retours</p></div></div>
+        <div class="table-wrap"><table id="products"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>Ventes par pays</h3><p class="sub">CA HT avant retours</p></div></div>
+        <div class="table-wrap"><table id="countries"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACQUISITION ================= -->
+  <section id="acquisition">
+    <div class="section-head"><h2>Acquisition</h2><p>Trafic, conversion et investissements marketing</p></div>
+    <div class="grid g-2-3">
+      <div class="card">
+        <div class="card-head"><div><h3>Tunnel de conversion</h3><p class="sub">De la visite à la commande</p></div></div>
+        <div class="funnel" id="funnel"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Dépenses marketing</h3><p class="sub">13 dernières semaines, par poste</p></div>
+          <div class="legend" id="legend-marketing"></div>
+        </div>
+        <div class="chart" id="chart-marketing" role="img" aria-label="Dépenses marketing hebdomadaires par poste"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-head"><div><h3>Performance par canal</h3><p class="sub">Semaine sélectionnée · CA HT avant retours · ROAS = CA ÷ dépense</p></div></div>
+      <div class="table-wrap"><table id="channels"></table></div>
+    </div>
+  </section>
+
+  <!-- ================= CLIENTS ================= -->
+  <section id="customers">
+    <div class="section-head"><h2>Clients</h2><p>Acquisition et fidélité</p></div>
+    <div class="grid g-3-2">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Commandes : nouveaux et récurrents</h3><p class="sub">13 dernières semaines</p></div>
+          <div class="legend" id="legend-customers"></div>
+        </div>
+        <div class="chart" id="chart-customers" role="img" aria-label="Commandes de nouveaux et de clients récurrents"></div>
+      </div>
+      <div class="tiles" id="customer-tiles" style="margin:0; grid-template-columns: repeat(2, minmax(0,1fr)); align-content: start;"></div>
+    </div>
+  </section>
+</main>
+
+<footer><span id="footer-source"></span><span id="footer-generated"></span></footer>
+<div id="tooltip" role="tooltip"></div>
+
+<script id="report-data" type="application/json">__REPORT_DATA__</script>
+<script>
+/*__METRICS_LIB__*/
+</script>
+<script>
+(function () {
+  'use strict';
+  const DATA = JSON.parse(document.getElementById('report-data').textContent);
+  const DS = DATA.dataset;
+  const NOTES = DATA.notes || [];
+  const shop = DS.meta.shop;
+  const F = makeFormat(shop.locale || 'fr-BE', shop.currency || 'EUR');
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const weekIds = DS.weeks.map((w) => w.id);
+  let current = pickInitialWeek();
+
+  // ------------------------------------------------------------------ utilitaires
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(SVGNS, tag);
+    for (const k in attrs || {}) if (attrs[k] != null) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function svgText(parent, x, y, text, attrs) { const t = el('text', Object.assign({ x, y }, attrs || {}), parent); t.textContent = text; return t; }
+  function pickInitialWeek() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (weekIds.includes(h)) return h;
+    if (DATA.defaultWeek && weekIds.includes(DATA.defaultWeek)) return DATA.defaultWeek;
+    return weekIds[weekIds.length - 1];
+  }
+  function weekLabel(w, withYear = true) {
+    const s = F.date(w.start, { day: 'numeric', month: 'short' });
+    const e = F.date(w.end, withYear ? { day: 'numeric', month: 'short', year: 'numeric' } : { day: 'numeric', month: 'short' });
+    return `S${w.week} · ${s} – ${e}`;
+  }
+  function deltaHtml(v, opts = {}) {
+    const { goodUp = true, kind = 'pct', vs = '' } = opts;
+    if (v == null || !isFinite(v)) return `<span class="delta flat">–${vs ? ` <span class="vs">${esc(vs)}</span>` : ''}</span>`;
+    const flat = Math.abs(v) < 0.0005;
+    const cls = flat ? 'flat' : (v > 0) === goodUp ? 'good' : 'bad';
+    const arrow = flat ? '●' : v > 0 ? '▲' : '▼';
+    const txt = kind === 'pts' ? F.pts(v) : F.delta(v);
+    return `<span class="delta ${cls}"><span class="arrow" aria-hidden="true">${arrow}</span>${txt}${vs ? ` <span class="vs">${esc(vs)}</span>` : ''}</span>`;
+  }
+  function niceTicks(min, max, count = 4) {
+    if (max === min) max = min + 1;
+    const span = max - min;
+    const raw = span / count;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => span / s <= count) || 10 * mag;
+    const lo = Math.floor(min / step) * step;
+    const hi = Math.ceil(max / step) * step;
+    const ticks = [];
+    for (let v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v * 1e6) / 1e6);
+    return { lo, hi, ticks };
+  }
+  function topRounded(x, y, w, h, r) {
+    if (h <= 0) return '';
+    r = Math.min(r, w / 2, h);
+    return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+  }
+  function bottomRounded(x, y, w, h, r) {
+    if (h <= 0) return '';
+    r = Math.min(r, w / 2, h);
+    return `M${x},${y}H${x + w}V${y + h - r}Q${x + w},${y + h} ${x + w - r},${y + h}H${x + r}Q${x},${y + h} ${x},${y + h - r}Z`;
+  }
+
+  // ------------------------------------------------------------------ infobulle
+  const tip = $('tooltip');
+  function showTip(html, evt) {
+    tip.innerHTML = html;
+    tip.style.opacity = '1';
+    const pad = 14;
+    const r = tip.getBoundingClientRect();
+    let x = evt.clientX + pad;
+    let y = evt.clientY + pad;
+    if (x + r.width > window.innerWidth - 8) x = evt.clientX - r.width - pad;
+    if (y + r.height > window.innerHeight - 8) y = evt.clientY - r.height - pad;
+    tip.style.left = `${Math.max(8, x)}px`;
+    tip.style.top = `${Math.max(8, y)}px`;
+  }
+  function hideTip() { tip.style.opacity = '0'; }
+  function ttRow(color, label, value, extra = '', cls = '') {
+    const sw = color ? `<i style="background:${color}"></i>` : '';
+    return `<div class="tt-row ${cls}"><span>${sw}${esc(label)}</span><b>${value}${extra ? ` <span class="muted" style="font-weight:450">${extra}</span>` : ''}</b></div>`;
+  }
+  function legend(target, items) {
+    $(target).innerHTML = items.map((it) => `<span><i class="${it.line ? 'line' : ''}" style="background:${it.color}"></i>${esc(it.name)}</span>`).join('');
+  }
+
+  // ------------------------------------------------------------------ graphique en courbes
+  function lineChart(container, cfg) {
+    container.innerHTML = '';
+    const W = Math.max(280, container.clientWidth);
+    const H = cfg.height || 260;
+    const m = { t: 12, r: 14, b: 28, l: cfg.left || 58 };
+    const n = cfg.points.length;
+    const all = cfg.series.flatMap((s) => s.values).filter((v) => v != null && isFinite(v));
+    const yMin = cfg.zero === false ? Math.min(...all) : Math.min(0, ...all);
+    const sc = niceTicks(yMin, Math.max(...all), 4);
+    const x = (i) => m.l + (n === 1 ? 0 : (i * (W - m.l - m.r)) / (n - 1));
+    const y = (v) => m.t + (1 - (v - sc.lo) / (sc.hi - sc.lo)) * (H - m.t - m.b);
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H }, container);
+
+    for (const t of sc.ticks) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 ? 'base-line' : 'grid-line' }, svg);
+      svgText(svg, m.l - 8, y(t) + 4, cfg.yFormat(t), { 'text-anchor': 'end' });
+    }
+    const step = Math.max(1, Math.ceil(n / Math.max(2, Math.floor((W - m.l - m.r) / 64))));
+    for (let i = n - 1; i >= 0; i -= step) svgText(svg, x(i), H - 8, cfg.xLabel(i), { 'text-anchor': i === n - 1 ? 'end' : 'middle' });
+
+    if (cfg.highlight != null) {
+      el('rect', { x: x(cfg.highlight) - 6, y: m.t, width: 12, height: H - m.t - m.b, style: 'fill:var(--wash)', rx: 3 }, svg);
+    }
+    for (const s of cfg.series) {
+      let d = '';
+      let pen = false;
+      s.values.forEach((v, i) => {
+        if (v == null) { pen = false; return; }
+        d += `${pen ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`;
+        pen = true;
+      });
+      if (s.area) {
+        const firstIdx = s.values.findIndex((v) => v != null);
+        el('path', { d: `${d}L${x(n - 1)},${y(Math.max(sc.lo, 0))}L${x(firstIdx)},${y(Math.max(sc.lo, 0))}Z`, style: `fill:${s.color};opacity:0.09;stroke:none` }, svg);
+      }
+      el('path', { d, style: `fill:none;stroke:${s.color};stroke-width:${s.width || 2};stroke-linejoin:round;stroke-linecap:round${s.dash ? `;stroke-dasharray:${s.dash}` : ''}` }, svg);
+    }
+    // point final de la série principale + étiquette directe
+    const main = cfg.series[0];
+    const li = cfg.highlight ?? n - 1;
+    if (main.values[li] != null) {
+      el('circle', { cx: x(li), cy: y(main.values[li]), r: 4.5, style: `fill:${main.color};stroke:var(--surface);stroke-width:2` }, svg);
+    }
+
+    // couche de survol
+    const cross = el('line', { y1: m.t, y2: H - m.b, style: 'stroke:var(--axis);stroke-width:1;opacity:0' }, svg);
+    const dots = cfg.series.map((s) => el('circle', { r: 4.5, style: `fill:${s.color};stroke:var(--surface);stroke-width:2;opacity:0` }, svg));
+    const hit = el('rect', { x: m.l - 6, y: 0, width: W - m.l - m.r + 12, height: H, style: 'fill:transparent', class: cfg.onClick ? 'hit' : '' }, svg);
+    const idxAt = (evt) => {
+      const r = svg.getBoundingClientRect();
+      const px = ((evt.clientX - r.left) / r.width) * W;
+      return Math.max(0, Math.min(n - 1, Math.round(((px - m.l) / (W - m.l - m.r)) * (n - 1))));
+    };
+    hit.addEventListener('pointermove', (evt) => {
+      const i = idxAt(evt);
+      cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.style.opacity = '1';
+      cfg.series.forEach((s, k) => {
+        const v = s.values[i];
+        if (v == null) { dots[k].style.opacity = '0'; return; }
+        dots[k].setAttribute('cx', x(i)); dots[k].setAttribute('cy', y(v)); dots[k].style.opacity = '1';
+      });
+      showTip(cfg.tooltip(i), evt);
+    });
+    hit.addEventListener('pointerleave', () => { cross.style.opacity = '0'; dots.forEach((d) => (d.style.opacity = '0')); hideTip(); });
+    if (cfg.onClick) hit.addEventListener('click', (evt) => cfg.onClick(idxAt(evt)));
+  }
+
+  // ------------------------------------------------------------------ colonnes empilées
+  function columnChart(container, cfg) {
+    container.innerHTML = '';
+    const W = Math.max(280, container.clientWidth);
+    const H = cfg.height || 240;
+    const m = { t: 18, r: 8, b: 28, l: cfg.left || 52 };
+    const n = cfg.labels.length;
+    const totalsArr = cfg.labels.map((_, i) => cfg.series.reduce((a, s) => a + (s.values[i] || 0), 0));
+    const sc = niceTicks(0, Math.max(...totalsArr), 4);
+    const band = (W - m.l - m.r) / n;
+    const bw = Math.min(24, band * 0.62);
+    const y = (v) => m.t + (1 - v / sc.hi) * (H - m.t - m.b);
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H }, container);
+    for (const t of sc.ticks) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 ? 'base-line' : 'grid-line' }, svg);
+      svgText(svg, m.l - 8, y(t) + 4, cfg.yFormat(t), { 'text-anchor': 'end' });
+    }
+    const step = Math.max(1, Math.ceil(n / Math.max(2, Math.floor((W - m.l - m.r) / 48))));
+    cfg.labels.forEach((lab, i) => {
+      const cx = m.l + band * i + band / 2;
+      if ((n - 1 - i) % step === 0) svgText(svg, cx, H - 8, lab, { 'text-anchor': 'middle', class: i === cfg.highlight ? 'label-strong' : '' });
+      let acc = 0;
+      const visible = cfg.series.map((s) => s.values[i] || 0);
+      const topIdx = visible.reduce((last, v, k) => (v > 0 ? k : last), -1);
+      const g = el('g', { opacity: cfg.highlight == null || cfg.highlight === i ? 1 : 0.55 }, svg);
+      cfg.series.forEach((s, k) => {
+        const v = visible[k];
+        if (v <= 0) return;
+        const y0 = y(acc);
+        const y1 = y(acc + v);
+        acc += v;
+        const gap = k === 0 ? 0 : 2;
+        const h = Math.max(0, y0 - y1 - gap);
+        if (h <= 0) return;
+        if (k === topIdx) el('path', { d: topRounded(cx - bw / 2, y1, bw, h, 4), style: `fill:${s.color}` }, g);
+        else el('rect', { x: cx - bw / 2, y: y1, width: bw, height: h, style: `fill:${s.color}` }, g);
+      });
+      if (cfg.topLabel && i === cfg.highlight) svgText(svg, cx, y(totalsArr[i]) - 6, cfg.topLabel(totalsArr[i]), { 'text-anchor': 'middle', class: 'label-strong' });
+      const hit = el('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, style: 'fill:transparent' }, svg);
+      hit.addEventListener('pointermove', (evt) => showTip(cfg.tooltip(i, totalsArr[i]), evt));
+      hit.addEventListener('pointerleave', hideTip);
+    });
+  }
+
+  // ------------------------------------------------------------------ cascade
+  function waterfall(container, steps) {
+    container.innerHTML = '';
+    const W = Math.max(280, container.clientWidth);
+    const H = 280;
+    const m = { t: 24, r: 8, b: 30, l: 56 };
+    let run = 0;
+    const bars = steps.map((s) => {
+      let from, to;
+      if (s.type === 'total') { from = 0; to = s.value; run = s.value; }
+      else { from = run; to = run - s.value; run = to; }
+      return Object.assign({}, s, { from, to });
+    });
+    const vals = bars.flatMap((b) => [b.from, b.to]);
+    const sc = niceTicks(Math.min(0, ...vals), Math.max(...vals), 4);
+    const y = (v) => m.t + (1 - (v - sc.lo) / (sc.hi - sc.lo)) * (H - m.t - m.b);
+    const band = (W - m.l - m.r) / bars.length;
+    const bw = Math.min(40, band * 0.6);
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, height: H }, container);
+    for (const t of sc.ticks) {
+      el('line', { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 ? 'base-line' : 'grid-line' }, svg);
+      svgText(svg, m.l - 8, y(t) + 4, F.eurCompact(t), { 'text-anchor': 'end' });
+    }
+    const small = band < 62;
+    bars.forEach((b, i) => {
+      const cx = m.l + band * i + band / 2;
+      const top = y(Math.max(b.from, b.to));
+      const bottom = y(Math.min(b.from, b.to));
+      const h = Math.max(1.5, bottom - top);
+      const color = b.type === 'total' ? (b.value < 0 ? 'var(--st-critical)' : 'var(--s1)') : 'var(--s2)';
+      let d;
+      if (b.type === 'total') d = b.value >= 0 ? topRounded(cx - bw / 2, top, bw, h, 4) : bottomRounded(cx - bw / 2, top, bw, h, 4);
+      else d = bottomRounded(cx - bw / 2, top, bw, h, 3);
+      el('path', { d, style: `fill:${color}` }, svg);
+      if (i < bars.length - 1) {
+        const yy = y(b.to);
+        el('line', { x1: cx + bw / 2, x2: cx + band - bw / 2, y1: yy, y2: yy, style: 'stroke:var(--axis);stroke-width:1' }, svg);
+      }
+      const label = b.type === 'total' ? F.eurCompact(b.value) : `−${F.eurCompact(b.value)}`;
+      const ly = b.type === 'total' && b.value < 0 ? bottom + 13 : top - 6;
+      svgText(svg, cx, ly, label, { 'text-anchor': 'middle', class: b.type === 'total' ? 'label-strong' : 'label-2', style: small ? 'font-size:9.5px' : '' });
+      svgText(svg, cx, H - 10, small ? b.short : b.label, { 'text-anchor': 'middle', style: small ? 'font-size:9.5px' : '' });
+      const hit = el('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, style: 'fill:transparent' }, svg);
+      hit.addEventListener('pointermove', (evt) => showTip(`<div class="tt-title">${esc(b.full || b.label)}</div>${ttRow(null, 'Montant', b.type === 'total' ? F.eur(b.value) : `−${F.eur(b.value)}`)}${b.base ? ttRow(null, '% du CA net', F.pct(b.value / b.base)) : ''}`, evt));
+      hit.addEventListener('pointerleave', hideTip);
+    });
+  }
+
+  // ------------------------------------------------------------------ mini-courbe
+  function sparkline(values, color = 'var(--s1)') {
+    const W = 200, H = 30;
+    const clean = values.map((v) => (v == null || !isFinite(v) ? null : v));
+    const nums = clean.filter((v) => v != null);
+    if (nums.length < 2) return '';
+    const lo = Math.min(...nums), hi = Math.max(...nums);
+    const x = (i) => 2 + (i * (W - 6)) / (clean.length - 1);
+    const y = (v) => 3 + (1 - (v - lo) / (hi - lo || 1)) * (H - 6);
+    let d = '';
+    clean.forEach((v, i) => { if (v != null) d += `${d ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`; });
+    const li = clean.length - 1;
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" style="fill:none;stroke:var(--cmp);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:round"/><circle cx="${x(li)}" cy="${y(clean[li])}" r="3" style="fill:${color};stroke:var(--surface);stroke-width:1.5"/></svg>`;
+  }
+
+  // ------------------------------------------------------------------ rendu
+  function render() {
+    const ctx = buildContext(DS, current);
+    const w = ctx.week;
+    document.title = `${shop.name} · Reporting S${w.week} ${w.year}`;
+    $('week-select').value = current;
+    $('prev-week').disabled = w.index === 0;
+    $('next-week').disabled = w.index === weekIds.length - 1;
+    $('period-text').textContent = `Semaine ${w.week} · du ${F.date(w.start, { day: 'numeric', month: 'long' })} au ${F.date(w.end, { day: 'numeric', month: 'long', year: 'numeric' })}${w.event ? ` · ${w.event}` : ''}`;
+    renderHero(ctx);
+    renderTiles(ctx);
+    renderRevenue(ctx);
+    renderInsights(ctx);
+    renderWaterfall(ctx);
+    renderMargins(ctx);
+    renderPnl(ctx);
+    renderCategories(ctx);
+    renderProducts(ctx);
+    renderCountries(ctx);
+    renderFunnel(ctx);
+    renderMarketing(ctx);
+    renderChannels(ctx);
+    renderCustomers(ctx);
+  }
+
+  function renderHero(ctx) {
+    const { cur, prev, ly, ytd, ytdLy } = ctx;
+    $('hero-value').textContent = F.eur(cur.net);
+    $('hero-deltas').innerHTML = [
+      deltaHtml(ctx.prev ? pct(cur.net, prev.net) : null, { vs: 'vs S-1' }),
+      deltaHtml(ly ? pct(cur.net, ly.net) : null, { vs: 'vs N-1' }),
+      deltaHtml(cur.budget ? pct(cur.net, cur.budget) : null, { vs: `vs objectif (${F.eur(cur.budget)})` }),
+    ].join('');
+    $('hero-mini').innerHTML = [
+      ['Encaissé TTC', F.eur(cur.ttc)],
+      ['Commandes', F.int(cur.orders)],
+      ['Marge brute', `${F.eur(cur.grossMargin)} · ${F.pct(cur.gmRate)}`],
+      ["Résultat d'exploitation", `${F.eur(cur.ebit)} · ${F.pct(cur.ebitRate)}`],
+    ].map(([k, v]) => `<div><span>${k}</span><strong>${v}</strong></div>`).join('');
+
+    const ab = ctx.annualBudget;
+    const done = ab ? ytd.net / ab : null;
+    const expected = ab && ytd.budget ? ytd.budget / ab : null;
+    $('ytd').innerHTML = `
+      <h4>Cumul ${ctx.week.year} (S1 → S${ctx.week.week})</h4>
+      <div class="big">${F.eur(ytd.net)}</div>
+      ${ab ? `
+        <div class="meter" role="img" aria-label="${F.pct(done)} de l'objectif annuel atteint, ${F.pct(expected)} attendu à date">
+          <i style="width:${Math.min(100, done * 100).toFixed(2)}%"></i>
+          ${expected ? `<b style="left:calc(${Math.min(100, expected * 100).toFixed(2)}% - 1px)" title="Attendu à date"></b>` : ''}
+        </div>
+        <div class="meter-legend"><span>${F.pct(done)} de l'objectif annuel (${F.eur(ab)})</span><span>▮ attendu à date : ${F.pct(expected)}</span></div>` : ''}
+      <div class="ytd-lines">
+        <div><span>vs objectif cumulé</span>${deltaHtml(ytd.budget ? pct(ytd.net, ytd.budget) : null)}</div>
+        <div><span>vs cumul N-1 (${ytdLy ? F.eur(ytdLy.net) : '–'})</span>${deltaHtml(ytdLy ? pct(ytd.net, ytdLy.net) : null)}</div>
+        <div><span>Marge brute cumulée</span><strong>${F.pct(ytd.gmRate)}</strong></div>
+        <div><span>Résultat d'exploitation cumulé</span><strong>${F.eur(ytd.ebit)} · ${F.pct(ytd.ebitRate)}</strong></div>
+      </div>`;
+  }
+
+  function renderTiles(ctx) {
+    const { cur, prev, ly } = ctx;
+    const hist = ctx.series.slice(-13).map((s) => s.t);
+    const tiles = [
+      { label: 'Commandes', v: F.int(cur.orders), key: 'orders' },
+      { label: 'Panier moyen HT', v: F.eur2(cur.aov), key: 'aov' },
+      { label: 'Sessions', v: F.int(cur.sessions), key: 'sessions' },
+      { label: 'Taux de conversion', v: F.pct(cur.conversion, 2), key: 'conversion' },
+      { label: 'Taux de marge brute', v: F.pct(cur.gmRate), key: 'gmRate', kind: 'pts', note: `${F.eur(cur.grossMargin)} de marge` },
+      { label: "Marge d'exploitation", v: F.pct(cur.ebitRate), key: 'ebitRate', kind: 'pts', note: `${F.eur(cur.ebit)} de résultat` },
+      { label: 'Taux de retour', v: F.pct(cur.returnRate), key: 'returnRate', kind: 'pts', goodUp: false, note: `${F.int(cur.returnedOrders)} commandes retournées` },
+      { label: 'Rentabilité marketing (MER)', v: `${F.dec1(cur.mer)} €`, key: 'mer', note: `CA net pour 1 € investi · ${F.eur(cur.marketing)} dépensés` },
+    ];
+    $('tiles').innerHTML = tiles.map((t) => {
+      const d = (base) => {
+        if (!base || base[t.key] == null) return null;
+        return t.kind === 'pts' ? cur[t.key] - base[t.key] : pct(cur[t.key], base[t.key]);
+      };
+      return `<div class="tile">
+        <div class="tile-label">${t.label}</div>
+        <div class="tile-value">${t.v}</div>
+        ${t.note ? `<div class="tile-note">${t.note}</div>` : ''}
+        <div class="tile-deltas">${deltaHtml(d(prev), { vs: 'vs S-1', kind: t.kind, goodUp: t.goodUp !== false })}${deltaHtml(d(ly), { vs: 'vs N-1', kind: t.kind, goodUp: t.goodUp !== false })}</div>
+        ${sparkline(hist.map((h) => h[t.key]))}
+      </div>`;
+    }).join('');
+  }
+
+  function renderRevenue(ctx) {
+    const s = ctx.series;
+    const series = [
+      { name: 'Réalisé', color: 'var(--s1)', values: s.map((p) => p.t.net), area: true },
+      { name: 'Même semaine N-1', color: 'var(--cmp)', values: s.map((p) => p.lyNet), width: 1.75 },
+      { name: 'Objectif', color: 'var(--s2)', values: s.map((p) => p.t.budget), width: 1.5, dash: '1 4' },
+    ];
+    legend('legend-revenue', series.map((x) => ({ name: x.name, color: x.color, line: true })));
+    lineChart($('chart-revenue'), {
+      points: s,
+      series,
+      height: 270,
+      highlight: s.length - 1,
+      yFormat: (v) => F.eurCompact(v),
+      xLabel: (i) => (s[i].week === 1 || i === 0 ? `S${s[i].week} ${String(s[i].year).slice(2)}` : `S${s[i].week}`),
+      tooltip: (i) => {
+        const p = s[i];
+        return `<div class="tt-title">${esc(weekLabel(p))}</div>${p.event ? `<div class="tt-sub">${esc(p.event)}</div>` : '<div class="tt-sub"></div>'}
+          ${ttRow('var(--s1)', 'Réalisé', F.eur(p.t.net))}
+          ${ttRow('var(--cmp)', 'N-1', F.eur(p.lyNet), p.lyNet ? F.delta(pct(p.t.net, p.lyNet)) : '')}
+          ${ttRow('var(--s2)', 'Objectif', F.eur(p.t.budget), p.t.budget ? F.delta(pct(p.t.net, p.t.budget)) : '')}
+          ${ttRow(null, 'Commandes', F.int(p.t.orders))}`;
+      },
+      onClick: (i) => selectWeek(s[i].id),
+    });
+    $('table-revenue').innerHTML = `<table><thead><tr><th>Semaine</th><th>Événement</th><th class="n">CA net HT</th><th class="n">N-1</th><th class="n">Var.</th><th class="n">Objectif</th><th class="n">Commandes</th></tr></thead><tbody>${s.slice().reverse().map((p) => `<tr><td>${esc(weekLabel(p))}</td><td class="ink2">${esc(p.event || '')}</td><td class="n">${F.eur(p.t.net)}</td><td class="n">${F.eur(p.lyNet)}</td><td class="n">${deltaHtml(p.lyNet ? pct(p.t.net, p.lyNet) : null)}</td><td class="n">${F.eur(p.t.budget)}</td><td class="n">${F.int(p.t.orders)}</td></tr>`).join('')}</tbody></table>`;
+  }
+
+  function renderInsights(ctx) {
+    const labels = { good: 'Positif', warning: 'Vigilance', critical: 'Alerte', info: 'Info' };
+    const icons = { good: '✓', warning: '!', critical: '✕', info: 'i' };
+    $('insights').innerHTML = ctx.insights.map((it) => `<li><span class="st-icon ${it.level}" aria-hidden="true">${icons[it.level]}</span><div><span class="st-label">${labels[it.level]}</span>${esc(it.text)}</div></li>`).join('');
+    const notes = NOTES.filter((n) => n.week === ctx.week.id);
+    const box = $('notes');
+    if (!notes.length) { box.hidden = true; box.innerHTML = ''; return; }
+    box.hidden = false;
+    box.innerHTML = notes.map((n) => `<h4>${esc(n.title || 'Analyse de la semaine')}</h4>${n.author || n.date ? `<div class="note-meta">${esc([n.author, n.date].filter(Boolean).join(' · '))}</div>` : ''}${miniMarkdown(n.body || '')}`).join('');
+  }
+
+  function miniMarkdown(src) {
+    const lines = esc(src).split(/\r?\n/);
+    let html = '';
+    let inList = false;
+    const inline = (s) => s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (/^[-*] /.test(line)) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${inline(line.slice(2))}</li>`; continue; }
+      if (inList) { html += '</ul>'; inList = false; }
+      if (line) html += `<p>${inline(line)}</p>`;
+    }
+    if (inList) html += '</ul>';
+    return html;
+  }
+
+  function renderWaterfall(ctx) {
+    const c = ctx.cur;
+    waterfall($('chart-waterfall'), [
+      { label: 'CA net', short: 'CA', full: 'CA net HT', value: c.net, type: 'total', base: c.net },
+      { label: 'Achats', short: 'Achats', full: "Coût d'achat des marchandises vendues", value: c.cogs, base: c.net },
+      { label: 'Logistique', short: 'Logist.', full: 'Transport et emballages', value: c.logistics, base: c.net },
+      { label: 'Paiement', short: 'Paiem.', full: 'Frais de paiement', value: c.paymentFees, base: c.net },
+      { label: 'Marketing', short: 'Mkt', full: 'Dépenses marketing', value: c.marketing, base: c.net },
+      { label: 'Frais fixes', short: 'Fixes', full: 'Frais fixes', value: c.fixed, base: c.net },
+      { label: 'Amort.', short: 'Amort.', full: 'Amortissements', value: c.depreciation, base: c.net },
+      { label: 'Résultat', short: 'Résultat', full: "Résultat d'exploitation", value: c.ebit, type: 'total', base: c.net },
+    ]);
+  }
+
+  function renderMargins(ctx) {
+    const s = ctx.series;
+    const series = [
+      { name: 'Marge brute', color: 'var(--s1)', values: s.map((p) => p.t.gmRate) },
+      { name: 'Marge sur coûts variables', color: 'var(--s3)', values: s.map((p) => p.t.contributionRate) },
+      { name: "Marge d'exploitation", color: 'var(--s2)', values: s.map((p) => p.t.ebitRate) },
+    ];
+    legend('legend-margins', series.map((x) => ({ name: x.name, color: x.color, line: true })));
+    lineChart($('chart-margins'), {
+      points: s,
+      series,
+      height: 280,
+      left: 46,
+      highlight: s.length - 1,
+      yFormat: (v) => `${Math.round(v * 100)} %`,
+      xLabel: (i) => `S${s[i].week}`,
+      tooltip: (i) => {
+        const p = s[i];
+        return `<div class="tt-title">${esc(weekLabel(p))}</div>${p.event ? `<div class="tt-sub">${esc(p.event)}</div>` : '<div class="tt-sub"></div>'}
+          ${ttRow('var(--s1)', 'Marge brute', F.pct(p.t.gmRate))}
+          ${ttRow('var(--s3)', 'Marge sur coûts variables', F.pct(p.t.contributionRate))}
+          ${ttRow('var(--s2)', "Marge d'exploitation", F.pct(p.t.ebitRate))}
+          ${ttRow(null, 'Remise moyenne', F.pct(p.t.discountRate))}`;
+      },
+      onClick: (i) => selectWeek(s[i].id),
+    });
+  }
+
+  function renderPnl(ctx) {
+    const { cur, prev, ly, ytd, ytdLy } = ctx;
+    const L = COST_LABELS;
+    const rows = [
+      { label: 'Ventes HT au prix catalogue', get: (t) => t.list },
+      { label: 'Remises & promotions', get: (t) => -t.discounts, cost: true },
+      { label: 'Ventes HT après remises', get: (t) => t.gross },
+      { label: 'Retours', get: (t) => -t.returns, cost: true },
+      { label: 'CA net HT', get: (t) => t.net, cls: 'total' },
+      { label: L.cogs, get: (t) => -t.cogs, cost: true },
+      { label: 'Marge brute', get: (t) => t.grossMargin, cls: 'total' },
+      { label: L.shipping, get: (t) => -t.shipping, cost: true },
+      { label: L.packaging, get: (t) => -t.packaging, cost: true },
+      { label: L.payment_fees, get: (t) => -t.paymentFees, cost: true },
+      { label: 'Marketing', get: (t) => -t.marketing, cost: true, group: 'mkt' },
+      ...Object.keys(cur.marketingDetail).map((k) => ({ label: L.marketing[k] || k, get: (t) => -(t.marketingDetail[k] || 0), cost: true, cls: 'detail', parent: 'mkt' })),
+      { label: 'Marge sur coûts variables', get: (t) => t.contribution, cls: 'total' },
+      { label: 'Frais fixes', get: (t) => -t.fixed, cost: true, group: 'fix' },
+      ...Object.keys(cur.fixedDetail).map((k) => ({ label: L.fixed[k] || k, get: (t) => -(t.fixedDetail[k] || 0), cost: true, cls: 'detail', parent: 'fix' })),
+      { label: 'EBITDA', get: (t) => t.ebitda, cls: 'total' },
+      { label: L.depreciation, get: (t) => -t.depreciation, cost: true },
+      { label: "Résultat d'exploitation", get: (t) => t.ebit, cls: 'result' },
+    ];
+    const v = (t, r) => (t ? r.get(t) : null);
+    const share = (t, r) => (t && t.net ? r.get(t) / t.net : null);
+    const varCell = (a, b, r) => {
+      if (a == null || b == null || b === 0) return '<td class="n">–</td>';
+      const d = r.cost ? -a / -b - 1 : pct(a, b);
+      return `<td class="n">${deltaHtml(Math.abs(b) < 0.005 ? null : d, { goodUp: !r.cost })}</td>`;
+    };
+    const head = `<thead><tr><th></th><th class="n">S${ctx.week.week}</th><th class="n">% CA</th><th class="n sep">S-1</th><th class="n">Var.</th><th class="n sep">N-1</th><th class="n">Var.</th><th class="n sep">Cumul ${ctx.week.year}</th><th class="n">% CA</th><th class="n sep">Cumul N-1</th><th class="n">Var.</th></tr></thead>`;
+    const body = rows.map((r) => {
+      const cls = [r.cls || '', r.group ? 'group' : '', r.parent ? 'hidden' : ''].join(' ').trim();
+      return `<tr class="${cls}" ${r.group ? `data-group="${r.group}"` : ''} ${r.parent ? `data-parent="${r.parent}"` : ''}>
+        <td>${esc(r.label)}</td>
+        <td class="n">${F.eur(v(cur, r))}</td><td class="n muted">${F.pct(share(cur, r))}</td>
+        <td class="n sep">${F.eur(v(prev, r))}</td>${varCell(v(cur, r), v(prev, r), r)}
+        <td class="n sep">${F.eur(v(ly, r))}</td>${varCell(v(cur, r), v(ly, r), r)}
+        <td class="n sep">${F.eur(v(ytd, r))}</td><td class="n muted">${F.pct(share(ytd, r))}</td>
+        <td class="n sep">${F.eur(v(ytdLy, r))}</td>${varCell(v(ytd, r), v(ytdLy, r), r)}
+      </tr>`;
+    }).join('');
+    const table = $('pnl');
+    const open = new Set([...table.querySelectorAll('tr.group.open')].map((tr) => tr.dataset.group));
+    table.innerHTML = head + `<tbody>${body}</tbody>`;
+    table.querySelectorAll('tr.group').forEach((tr) => {
+      const g = tr.dataset.group;
+      const toggle = (state) => {
+        tr.classList.toggle('open', state);
+        table.querySelectorAll(`tr[data-parent="${g}"]`).forEach((d) => d.classList.toggle('hidden', !state));
+      };
+      if (open.has(g)) toggle(true);
+      tr.addEventListener('click', () => toggle(!tr.classList.contains('open')));
+    });
+  }
+
+  function renderCategories(ctx) {
+    const max = Math.max(...ctx.categories.map((c) => c.net));
+    $('categories').innerHTML = `<thead><tr><th>Catégorie</th><th>CA net HT</th><th class="n">Part</th><th class="n">vs S-1</th><th class="n">vs N-1</th><th class="n">Unités</th><th class="n">Marge brute</th><th class="n">Taux de retour</th></tr></thead><tbody>${ctx.categories.map((c) => `
+      <tr>
+        <td>${esc(c.name)}</td>
+        <td><div class="bar-cell"><div class="track"><i style="width:${((c.net / max) * 100).toFixed(1)}%"></i></div><span class="val">${F.eur(c.net)}</span></div></td>
+        <td class="n">${F.pct(c.share)}</td>
+        <td class="n">${deltaHtml(c.vsPrev)}</td>
+        <td class="n">${deltaHtml(c.vsLy)}</td>
+        <td class="n">${F.int(c.units)}</td>
+        <td class="n">${F.pct(c.gmRate)}</td>
+        <td class="n">${F.pct(c.returnRate)}${ctx.alerts.return_rate_max != null && c.returnRate > ctx.alerts.return_rate_max ? ' <span class="st-label" style="margin:0 0 0 4px;color:var(--bad-ink)">▲ élevé</span>' : ''}</td>
+      </tr>`).join('')}</tbody>`;
+  }
+
+  function renderProducts(ctx) {
+    $('products').innerHTML = `<thead><tr><th>#</th><th>Produit</th><th>Catégorie</th><th class="n">Unités</th><th class="n">CA HT</th><th class="n">vs S-1</th></tr></thead><tbody>${ctx.products.slice(0, 10).map((p, i) => `
+      <tr><td class="rank">${i + 1}</td><td><span class="prod-name">${esc(p.name)}</span><span class="prod-sku">${esc(p.sku)}</span></td><td class="ink2">${esc(p.category)}</td><td class="n">${F.int(p.units)}</td><td class="n">${F.eur(p.revenue)}</td><td class="n">${deltaHtml(p.vsPrev)}</td></tr>`).join('')}</tbody>`;
+  }
+
+  function renderCountries(ctx) {
+    const max = Math.max(...ctx.countries.map((c) => c.revenue));
+    $('countries').innerHTML = `<thead><tr><th>Pays</th><th>CA HT</th><th class="n">Part</th><th class="n">Cdes</th><th class="n">vs S-1</th></tr></thead><tbody>${ctx.countries.map((c) => `
+      <tr><td>${esc(c.name)}</td><td><div class="bar-cell" style="min-width:130px"><div class="track"><i style="width:${((c.revenue / max) * 100).toFixed(1)}%"></i></div><span class="val">${F.eur(c.revenue)}</span></div></td><td class="n">${F.pct(c.share)}</td><td class="n">${F.int(c.orders)}</td><td class="n">${deltaHtml(c.vsPrev)}</td></tr>`).join('')}</tbody>`;
+  }
+
+  function renderFunnel(ctx) {
+    const c = ctx.cur, p = ctx.prev;
+    const stages = [
+      { label: 'Sessions', v: c.sessions, pv: p?.sessions, color: 'var(--f1)' },
+      { label: 'Ajouts au panier', v: c.addToCart, pv: p?.addToCart, color: 'var(--f2)', rate: c.addToCart / c.sessions, rateLabel: 'des sessions' },
+      { label: 'Paiements initiés', v: c.checkouts, pv: p?.checkouts, color: 'var(--f3)', rate: c.checkouts / c.addToCart, rateLabel: 'des paniers' },
+      { label: 'Commandes', v: c.orders, pv: p?.orders, color: 'var(--f4)', rate: c.orders / c.checkouts, rateLabel: 'des paiements' },
+    ];
+    $('funnel').innerHTML = stages.map((s) => `
+      <div class="funnel-row">
+        <div class="f-label">${s.label}${s.rate != null ? `<small>${F.pct(s.rate)} ${s.rateLabel}</small>` : '<small>&nbsp;</small>'}</div>
+        <div class="f-bar" style="width:${Math.max(1.5, (s.v / c.sessions) * 100).toFixed(2)}%;background:${s.color}"></div>
+        <div class="f-val">${F.int(s.v)}<div>${deltaHtml(pct(s.v, s.pv), { vs: '' })}</div></div>
+      </div>`).join('') + `<div class="muted" style="font-size:12.5px">Taux de conversion global : <strong style="color:var(--ink)">${F.pct(c.conversion, 2)}</strong> · variations vs S-1</div>`;
+  }
+
+  function renderMarketing(ctx) {
+    const weeks = ctx.last13;
+    const keys = Object.keys(ctx.cur.marketingDetail);
+    const colors = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)', 'var(--s8)'];
+    const series = keys.map((k, i) => ({ name: COST_LABELS.marketing[k] || k, color: colors[i % 8], values: weeks.map((w) => w.t.marketingDetail[k] || 0) }));
+    legend('legend-marketing', series.map((s) => ({ name: s.name, color: s.color })));
+    columnChart($('chart-marketing'), {
+      labels: weeks.map((w) => `S${w.week}`),
+      series,
+      height: 250,
+      highlight: weeks.length - 1,
+      yFormat: (v) => F.eurCompact(v),
+      topLabel: (v) => F.eurCompact(v),
+      tooltip: (i, total) => `<div class="tt-title">Semaine ${weeks[i].week}</div><div class="tt-sub">MER : ${F.dec1(weeks[i].t.mer)} € de CA net par € investi</div>${series.slice().reverse().map((s) => ttRow(s.color, s.name, F.eur(s.values[i]))).join('')}${ttRow(null, 'Total', F.eur(total), F.pct(total / weeks[i].t.net) + ' du CA', 'total')}`,
+    });
+  }
+
+  function renderChannels(ctx) {
+    const c = ctx.cur;
+    $('channels').innerHTML = `<thead><tr><th>Canal</th><th class="n">Sessions</th><th class="n">Part</th><th class="n">Commandes</th><th class="n">Conversion</th><th class="n">CA HT</th><th class="n">vs S-1</th><th class="n">Dépense</th><th class="n">ROAS</th><th class="n">Coût / commande</th></tr></thead><tbody>${ctx.channels.map((ch) => `
+      <tr><td>${esc(ch.name)}</td><td class="n">${F.int(ch.sessions)}</td><td class="n muted">${F.pct(ch.sessionShare)}</td><td class="n">${F.int(ch.orders)}</td><td class="n">${F.pct(ch.conversion, 2)}</td><td class="n">${F.eur(ch.revenue)}</td><td class="n">${deltaHtml(ch.vsPrev)}</td><td class="n">${ch.spend ? F.eur(ch.spend) : '<span class="muted">–</span>'}</td><td class="n">${ch.roas ? `${F.dec1(ch.roas)}×` : '<span class="muted">–</span>'}</td><td class="n">${ch.cpa ? F.eur2(ch.cpa) : '<span class="muted">–</span>'}</td></tr>`).join('')}
+      <tr class="total"><td><strong>Total</strong></td><td class="n"><strong>${F.int(c.sessions)}</strong></td><td class="n muted">100 %</td><td class="n"><strong>${F.int(c.orders)}</strong></td><td class="n"><strong>${F.pct(c.conversion, 2)}</strong></td><td class="n"><strong>${F.eur(c.gross)}</strong></td><td class="n">${deltaHtml(ctx.prev ? pct(c.gross, ctx.prev.gross) : null)}</td><td class="n"><strong>${F.eur(c.marketing)}</strong></td><td class="n"><strong>${F.dec1(c.gross / c.marketing)}×</strong></td><td class="n"><strong>${F.eur2(c.marketing / c.orders)}</strong></td></tr></tbody>`;
+  }
+
+  function renderCustomers(ctx) {
+    const weeks = ctx.last13;
+    const series = [
+      { name: 'Nouveaux clients', color: 'var(--s1)', values: weeks.map((w) => w.t.newCustomers) },
+      { name: 'Clients récurrents', color: 'var(--s2)', values: weeks.map((w) => w.t.returningCustomers) },
+    ];
+    legend('legend-customers', series.map((s) => ({ name: s.name, color: s.color })));
+    columnChart($('chart-customers'), {
+      labels: weeks.map((w) => `S${w.week}`),
+      series,
+      height: 250,
+      left: 40,
+      highlight: weeks.length - 1,
+      yFormat: (v) => F.int(v),
+      topLabel: (v) => F.int(v),
+      tooltip: (i, total) => `<div class="tt-title">Semaine ${weeks[i].week}</div><div class="tt-sub">${F.pct(weeks[i].t.returningShare)} de commandes récurrentes</div>${series.slice().reverse().map((s) => ttRow(s.color, s.name, F.int(s.values[i]))).join('')}${ttRow(null, 'Total commandes', F.int(total), '', 'total')}`,
+    });
+    const { cur, prev, ly } = ctx;
+    const tiles = [
+      { label: 'Nouveaux clients', v: F.int(cur.newCustomers), d: pct(cur.newCustomers, prev?.newCustomers), dl: pct(cur.newCustomers, ly?.newCustomers) },
+      { label: 'Part de commandes récurrentes', v: F.pct(cur.returningShare), d: prev ? cur.returningShare - prev.returningShare : null, dl: ly ? cur.returningShare - ly.returningShare : null, kind: 'pts' },
+      { label: "Coût d'acquisition client (CAC)", v: F.eur2(cur.cac), d: pct(cur.cac, prev?.cac), dl: pct(cur.cac, ly?.cac), goodUp: false, note: 'Marketing ÷ nouveaux clients' },
+      { label: 'Articles par commande', v: F.dec2(cur.upt), d: pct(cur.upt, prev?.upt), dl: pct(cur.upt, ly?.upt) },
+    ];
+    $('customer-tiles').innerHTML = tiles.map((t) => `<div class="tile"><div class="tile-label">${t.label}</div><div class="tile-value">${t.v}</div>${t.note ? `<div class="tile-note">${t.note}</div>` : ''}<div class="tile-deltas">${deltaHtml(t.d, { vs: 'vs S-1', kind: t.kind, goodUp: t.goodUp !== false })}${deltaHtml(t.dl, { vs: 'vs N-1', kind: t.kind, goodUp: t.goodUp !== false })}</div></div>`).join('');
+  }
+
+  // ------------------------------------------------------------------ navigation
+  function selectWeek(id) {
+    if (!weekIds.includes(id) || id === current) return;
+    current = id;
+    history.replaceState(null, '', `#${id}`);
+    hideTip();
+    render();
+  }
+
+  function init() {
+    $('shop-name').textContent = shop.name;
+    $('shop-sub').textContent = `Reporting hebdomadaire${shop.tagline ? ` · ${shop.tagline}` : ''}`;
+    if (DS.meta.source?.type === 'fake') $('source-badge').hidden = false;
+    const sel = $('week-select');
+    sel.innerHTML = DS.weeks.slice().reverse().map((w) => `<option value="${w.id}">${esc(weekLabel(w))}${w.event ? ` · ${esc(w.event)}` : ''}</option>`).join('');
+    sel.addEventListener('change', () => selectWeek(sel.value));
+    $('prev-week').addEventListener('click', () => selectWeek(weekIds[weekIds.indexOf(current) - 1]));
+    $('next-week').addEventListener('click', () => selectWeek(weekIds[weekIds.indexOf(current) + 1]));
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'SELECT') return;
+      if (e.key === 'ArrowLeft') selectWeek(weekIds[weekIds.indexOf(current) - 1]);
+      if (e.key === 'ArrowRight') selectWeek(weekIds[weekIds.indexOf(current) + 1]);
+    });
+    $('print-btn').addEventListener('click', () => window.print());
+    let saved = null;
+    try { saved = localStorage.getItem('reporting-theme'); } catch (e) { /* stockage indisponible */ }
+    if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+    $('theme-btn').addEventListener('click', () => {
+      const isDark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      const next = isDark ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('reporting-theme', next); } catch (e) { /* stockage indisponible */ }
+    });
+    const src = DS.meta.source || {};
+    $('footer-source').textContent = src.type === 'fake' ? `Source : données factices (graine ${src.seed}) · ${DS.meta.period.from} → ${DS.meta.period.to}` : `Source : ${src.type || 'inconnue'} · ${DS.meta.period.from} → ${DS.meta.period.to}`;
+    $('footer-generated').textContent = `Rapport généré le ${new Intl.DateTimeFormat(shop.locale || 'fr-BE', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(DATA.generatedAt || Date.now()))}`;
+
+    // section active dans la navigation
+    const links = [...document.querySelectorAll('#section-nav a')];
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === `#${en.target.id}`));
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main section').forEach((s) => obs.observe(s));
+    links.forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' }); }));
+
+    let t;
+    let lastW = window.innerWidth;
+    window.addEventListener('resize', () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth; clearTimeout(t); t = setTimeout(render, 120); });
+    render();
+  }
+  init();
+})();
+</script>
+</body>
+</html>

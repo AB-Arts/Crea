@@ -1,0 +1,139 @@
+{
+  "slug": "demo-mode",
+  "name": "Atelier Verso",
+  "tagline": "Boutique de prêt-à-porter en ligne (démo)",
+  "sector": "Prêt-à-porter",
+  "currency": "EUR",
+  "locale": "fr-BE",
+  "vat_rate": 0.21,
+
+  "data_source": {
+    "type": "fake",
+    "note": "Données factices générées par scripts/generate-fake-data.mjs. Remplacer par un connecteur (Shopify, WooCommerce, PrestaShop…) qui produit le même dataset.json."
+  },
+
+  "alerts": {
+    "return_rate_max": 0.22,
+    "gross_margin_min": 0.55,
+    "operating_margin_min": 0.10,
+    "mer_min": 7,
+    "conversion_drop_pct": 0.15
+  },
+
+  "budget": {
+    "2025": 455000,
+    "2026": 520000
+  },
+
+  "fake": {
+    "seed": 20261112,
+    "from": "2025-W01",
+    "to": "2026-W45",
+    "annual_net_revenue": 500000,
+    "target_operating_margin": 0.25,
+    "growth_yoy": 0.12,
+    "noise": 0.055,
+
+    "avg_order_value_ht": 82,
+    "units_per_order": 1.75,
+    "conversion_rate": 0.019,
+    "checkout_completion": 0.56,
+    "cart_to_checkout": 0.45,
+    "new_customer_share": 0.6,
+    "base_discount": 0.04,
+
+    "monthly_seasonality": [0.95, 0.78, 0.95, 1.05, 1.08, 1.0, 0.95, 0.82, 1.05, 1.05, 1.0, 1.1],
+
+    "events": [
+      { "name": "Soldes d'hiver", "weeks": [1, 2, 3, 4], "uplift": [1.55, 1.45, 1.25, 1.08], "discount": 0.3, "conversion": 1.3, "aov": 0.92 },
+      { "name": "Fête des mères", "weeks": [19], "uplift": [1.15], "discount": 0.08, "conversion": 1.08, "aov": 1.04 },
+      { "name": "Soldes d'été", "weeks": [27, 28, 29, 30], "uplift": [1.45, 1.35, 1.2, 1.05], "discount": 0.3, "conversion": 1.28, "aov": 0.92 },
+      { "name": "Mi-saison", "weeks": [40], "uplift": [1.15], "discount": 0.15, "conversion": 1.12, "aov": 0.97 },
+      { "name": "Black Friday", "weeks": [48], "uplift": [2.4], "discount": 0.25, "conversion": 1.55, "aov": 1.05, "cpc": 1.4 },
+      { "name": "Cyber Monday", "weeks": [49], "uplift": [1.35], "discount": 0.15, "conversion": 1.2, "aov": 1.0, "cpc": 1.2 },
+      { "name": "Noël", "weeks": [50, 51], "uplift": [1.35, 1.3], "discount": 0.05, "conversion": 1.12, "aov": 1.08, "cpc": 1.15 },
+      { "name": "Fin d'année", "weeks": [52, 53], "uplift": [0.75, 0.75], "discount": 0.05, "conversion": 0.9, "aov": 1.0 }
+    ],
+
+    "season_profiles": {
+      "été":    [0.7, 0.75, 0.95, 1.1, 1.3, 1.45, 1.4, 1.2, 0.95, 0.75, 0.65, 0.7],
+      "hiver":  [1.35, 1.15, 0.9, 0.7, 0.55, 0.45, 0.5, 0.75, 1.1, 1.35, 1.55, 1.6],
+      "neutre": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "cadeau": [0.85, 0.9, 0.9, 0.95, 1.1, 0.95, 0.9, 0.85, 0.9, 1.0, 1.3, 1.7]
+    },
+
+    "categories": [
+      { "name": "T-shirts & tops",     "share": 0.17, "season": "été",    "list_margin": 0.70, "return_rate": 0.13 },
+      { "name": "Robes",               "share": 0.15, "season": "été",    "list_margin": 0.68, "return_rate": 0.27 },
+      { "name": "Jeans & pantalons",   "share": 0.17, "season": "neutre", "list_margin": 0.64, "return_rate": 0.25 },
+      { "name": "Pulls & sweats",      "share": 0.14, "season": "hiver",  "list_margin": 0.66, "return_rate": 0.16 },
+      { "name": "Vestes & manteaux",   "share": 0.14, "season": "hiver",  "list_margin": 0.62, "return_rate": 0.19 },
+      { "name": "Chemises",            "share": 0.08, "season": "neutre", "list_margin": 0.67, "return_rate": 0.17 },
+      { "name": "Accessoires",         "share": 0.09, "season": "cadeau", "list_margin": 0.72, "return_rate": 0.06 },
+      { "name": "Chaussures",          "share": 0.06, "season": "neutre", "list_margin": 0.58, "return_rate": 0.23 }
+    ],
+
+    "products": [
+      { "sku": "TS-001", "name": "T-shirt coton bio Essentiel",   "category": "T-shirts & tops",   "price_ht": 24.79, "weight": 3 },
+      { "sku": "TS-014", "name": "Débardeur côtelé Lina",          "category": "T-shirts & tops",   "price_ht": 20.66, "weight": 1.6 },
+      { "sku": "TS-022", "name": "Top lin col V Sable",            "category": "T-shirts & tops",   "price_ht": 37.19, "weight": 1.2 },
+      { "sku": "RB-003", "name": "Robe midi lin Sable",            "category": "Robes",             "price_ht": 73.55, "weight": 2.4 },
+      { "sku": "RB-011", "name": "Robe portefeuille fleurie",      "category": "Robes",             "price_ht": 61.16, "weight": 1.8 },
+      { "sku": "RB-019", "name": "Robe pull maille Ardoise",       "category": "Robes",             "price_ht": 69.42, "weight": 1.1 },
+      { "sku": "JN-002", "name": "Jean droit brut Mathis",         "category": "Jeans & pantalons", "price_ht": 73.55, "weight": 2.6 },
+      { "sku": "JN-008", "name": "Jean mom taille haute Ciel",     "category": "Jeans & pantalons", "price_ht": 69.42, "weight": 2.0 },
+      { "sku": "PT-005", "name": "Pantalon large fluide Encre",    "category": "Jeans & pantalons", "price_ht": 57.02, "weight": 1.3 },
+      { "sku": "PL-004", "name": "Pull col rond mérinos",          "category": "Pulls & sweats",    "price_ht": 65.29, "weight": 2.3 },
+      { "sku": "PL-012", "name": "Sweat à capuche Studio",         "category": "Pulls & sweats",    "price_ht": 53.72, "weight": 2.1 },
+      { "sku": "PL-017", "name": "Cardigan torsadé Crème",         "category": "Pulls & sweats",    "price_ht": 77.69, "weight": 1.0 },
+      { "sku": "VS-006", "name": "Trench imperméable Camel",       "category": "Vestes & manteaux", "price_ht": 148.76, "weight": 1.6 },
+      { "sku": "VS-009", "name": "Doudoune légère Nuit",           "category": "Vestes & manteaux", "price_ht": 123.97, "weight": 1.8 },
+      { "sku": "VS-015", "name": "Veste en jean Délavée",          "category": "Vestes & manteaux", "price_ht": 81.82, "weight": 1.2 },
+      { "sku": "CH-007", "name": "Chemise oxford Blanche",         "category": "Chemises",          "price_ht": 49.59, "weight": 2.0 },
+      { "sku": "CH-013", "name": "Surchemise velours Olive",       "category": "Chemises",          "price_ht": 61.16, "weight": 1.2 },
+      { "sku": "AC-010", "name": "Bonnet laine recyclée",          "category": "Accessoires",       "price_ht": 20.66, "weight": 2.0 },
+      { "sku": "AC-016", "name": "Sac cabas toile Atelier",        "category": "Accessoires",       "price_ht": 28.93, "weight": 1.7 },
+      { "sku": "AC-021", "name": "Écharpe grand format Brume",     "category": "Accessoires",       "price_ht": 32.23, "weight": 1.3 },
+      { "sku": "SH-018", "name": "Baskets cuir Minimal",           "category": "Chaussures",        "price_ht": 98.35, "weight": 1.5 },
+      { "sku": "SH-020", "name": "Bottines Chelsea Noir",          "category": "Chaussures",        "price_ht": 114.88, "weight": 1.0 }
+    ],
+
+    "channels": [
+      { "key": "organic",   "name": "Recherche organique",        "share": 0.30, "conversion": 1.0,  "cost": { "type": "none" } },
+      { "key": "google",    "name": "Google Ads",                 "share": 0.14, "conversion": 1.25, "cost": { "type": "cpc", "value": 0.38, "line": "google_ads" } },
+      { "key": "meta",      "name": "Meta Ads",                   "share": 0.18, "conversion": 0.7,  "cost": { "type": "cpc", "value": 0.26, "line": "meta_ads" } },
+      { "key": "email",     "name": "E-mail & newsletter",        "share": 0.09, "conversion": 2.0,  "cost": { "type": "monthly", "value": 250, "line": "emailing" } },
+      { "key": "direct",    "name": "Accès direct",               "share": 0.13, "conversion": 1.4,  "cost": { "type": "none" } },
+      { "key": "social",    "name": "Réseaux sociaux & influence", "share": 0.13, "conversion": 0.6,  "cost": { "type": "monthly", "value": 600, "line": "influence" } },
+      { "key": "affiliate", "name": "Affiliation",                "share": 0.03, "conversion": 1.1,  "cost": { "type": "commission", "value": 0.08, "line": "affiliation" } }
+    ],
+
+    "countries": [
+      { "code": "BE", "name": "Belgique",   "share": 0.56 },
+      { "code": "FR", "name": "France",     "share": 0.24 },
+      { "code": "NL", "name": "Pays-Bas",   "share": 0.10 },
+      { "code": "LU", "name": "Luxembourg", "share": 0.06 },
+      { "code": "DE", "name": "Allemagne",  "share": 0.04 }
+    ],
+
+    "variable_costs": {
+      "shipping_per_order": 4.9,
+      "shipping_per_return": 4.2,
+      "packaging_per_order": 0.85,
+      "payment_fee_rate": 0.014,
+      "payment_fee_fixed": 0.25
+    },
+
+    "fixed_costs_annual": {
+      "salaries": 52000,
+      "rent": 10800,
+      "software": 6000,
+      "content": 6000,
+      "accounting": 4200,
+      "insurance": 1800,
+      "other": 2400
+    },
+    "fixed_costs_prev_year_factor": 0.94,
+    "depreciation_annual": 2400
+  }
+}
