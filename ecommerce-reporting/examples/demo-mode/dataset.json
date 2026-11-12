@@ -13,7 +13,7 @@
   "source": {
    "type": "fake",
    "seed": 20261112,
-   "generated_at": "2026-11-12T19:30:40.720Z",
+   "generated_at": "2026-11-12T20:27:10.136Z",
    "generator": "generate-fake-data.mjs"
   },
   "period": {
