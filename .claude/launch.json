@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "reporting-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["ecommerce-reporting/scripts/serve.mjs", "ecommerce-reporting/examples/demo-mode", "--port", "4173"],
+      "port": 4173
+    }
+  ]
+}

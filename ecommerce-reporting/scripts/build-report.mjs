@@ -32,6 +32,8 @@ if (args.notes) {
 }
 
 const template = fs.readFileSync(path.join(here, '..', 'templates', 'dashboard.html'), 'utf8');
+const fontsCss = fs.readFileSync(path.join(here, '..', 'assets', 'fonts', 'geist-fontface.css'), 'utf8');
+const logoUri = 'data:image/png;base64,' + fs.readFileSync(path.join(here, '..', 'assets', 'ab-arts-logo.png')).toString('base64');
 const metricsSrc = fs.readFileSync(path.join(here, 'lib', 'metrics.mjs'), 'utf8').replace(/^export\s+/gm, '');
 
 const payload = JSON.stringify({ dataset, notes, defaultWeek: week, generatedAt: new Date().toISOString() })
@@ -40,6 +42,8 @@ const payload = JSON.stringify({ dataset, notes, defaultWeek: week, generatedAt:
 const title = `${dataset.meta.shop.name} · Reporting S${ctx.week.week} ${ctx.week.year}`;
 const html = template
   .replace('__TITLE__', () => escapeHtml(title))
+  .replace('/*__FONTS__*/', () => fontsCss)
+  .replaceAll('__LOGO_DATA_URI__', () => logoUri)
   .replace('/*__METRICS_LIB__*/', () => metricsSrc)
   .replace('__REPORT_DATA__', () => payload);
 

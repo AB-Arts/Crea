@@ -128,7 +128,9 @@ Les noms de boutique et de produits des profils de test doivent être inventés 
 - `scripts/build-report.mjs` : assemble le dashboard HTML (`--notes` optionnel).
 - `scripts/lib/metrics.mjs` : calculs (source unique, aussi injectée dans le HTML).
 - `scripts/lib/weeks.mjs`, `scripts/lib/rng.mjs` : semaines ISO, aléatoire déterministe.
-- `templates/dashboard.html` : gabarit du dashboard (CSS + graphiques SVG faits main, sans bibliothèque).
+- `templates/dashboard.html` : gabarit du dashboard à la charte AB-Arts (bandeau sombre, accent ember, Geist / Geist Mono, graphiques SVG faits main, sans bibliothèque).
+- `assets/fonts/geist-fontface.css`, `assets/ab-arts-logo.png` : polices et logo AB-Arts, embarqués dans le HTML à la construction.
+- `scripts/serve.mjs` : petit serveur local pour prévisualiser les rapports (`node scripts/serve.mjs reporting/<slug>`).
 - `profiles/demo-mode.json` : profil de démonstration.
 - `examples/demo-mode/` : dataset, analyse et dashboard d'exemple (semaine 2026-W45).
 - `references/data-schema.md` : schéma du profil et du dataset.
