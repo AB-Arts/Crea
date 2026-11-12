@@ -89,6 +89,7 @@ Sortie par défaut : `reporting/<slug>/dashboard-2026-W45.html` (≈ 450 Ko). Le
 | Section | Contenu |
 |---|---|
 | Vue d'ensemble | CA net HT de la semaine (vs S-1, N-1, objectif), encaissé TTC, commandes, marge brute, résultat ; cumul annuel avec jauge vs objectif annuel et repère « attendu à date » ; 8 tuiles avec mini-courbes 13 semaines ; courbe 52 semaines réalisé / N-1 / objectif ; faits marquants automatiques + analyse rédigée |
+| Répartition | Six anneaux (camemberts évidés), au choix sur la semaine ou le cumul annuel : ventes par catégorie, par pays, par canal, « où va chaque euro de CA » (achats, logistique, paiement, marketing, frais fixes, amortissements, résultat), dépenses marketing par poste, commandes nouveaux / récurrents. Légende avec montants et parts, survol pour le détail. La couleur suit l'entité (ordre du profil) et ne change pas d'une période à l'autre |
 | Rentabilité | Cascade CA net → achats → logistique → paiement → marketing → frais fixes → amortissements → résultat ; taux de marge brute / sur coûts variables / d'exploitation sur 52 semaines ; compte de résultat détaillé (semaine, S-1, N-1, cumul, cumul N-1, % du CA) avec détail dépliable du marketing et des frais fixes |
 | Ventes | Catégories (CA net, part, vs S-1, vs N-1, unités, marge, taux de retour avec alerte) ; top 10 produits ; pays |
 | Acquisition | Tunnel sessions → panier → paiement → commande ; dépenses marketing empilées sur 13 semaines ; performance par canal (sessions, conversion, CA, dépense, ROAS, coût par commande) |

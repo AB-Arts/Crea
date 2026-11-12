@@ -254,6 +254,28 @@ tbody tr:hover td { background: color-mix(in srgb, var(--s1) 5%, transparent); }
 .funnel-row .f-val { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
 @media (max-width: 520px) { .funnel-row { grid-template-columns: 96px minmax(0, 1fr) 70px; } }
 
+/* ---------- Répartition (anneaux) ---------- */
+.g-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .g-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .g-3 { grid-template-columns: minmax(0, 1fr); } }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 550; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.donut { width: 210px; max-width: 100%; }
+.donut svg { display: block; width: 100%; height: auto; overflow: visible; }
+.donut path { transition: opacity 0.12s; cursor: pointer; }
+.donut .c-val { fill: var(--ink); font-size: 19px; font-weight: 650; }
+.donut .c-lab { fill: var(--muted); font-size: 11px; }
+.donut-legend { width: 100%; display: grid; gap: 2px; font-size: 12.5px; }
+.donut-legend .row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto 52px; gap: 8px; align-items: center; padding: 4px 6px; border-radius: 6px; cursor: default; }
+.donut-legend .row:hover, .donut-legend .row.on { background: var(--surface-2); }
+.donut-legend .row i { width: 10px; height: 10px; border-radius: 3px; }
+.donut-legend .row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.donut-legend .row b { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.donut-legend .row em { font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; text-align: right; }
+.donut-note { color: var(--muted); font-size: 12px; text-align: center; }
+
 details.data-table { margin-top: 12px; }
 details.data-table summary { cursor: pointer; color: var(--ink-2); font-size: 12.5px; font-weight: 550; }
 details.data-table .table-wrap { max-height: 320px; overflow: auto; margin-top: 8px; }
@@ -300,6 +322,7 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
   </div>
   <nav class="sections" id="section-nav">
     <a href="#overview" class="active">Vue d'ensemble</a>
+    <a href="#mix">Répartition</a>
     <a href="#profit">Rentabilité</a>
     <a href="#sales">Ventes</a>
     <a href="#acquisition">Acquisition</a>
@@ -338,6 +361,25 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
         <ul class="insights" id="insights"></ul>
         <div class="notes" id="notes" hidden></div>
       </div>
+    </div>
+  </section>
+
+  <!-- ================= RÉPARTITION ================= -->
+  <section id="mix">
+    <div class="section-head">
+      <div><h2>Répartition</h2><p id="mix-period-text" style="margin-top:2px"></p></div>
+      <div class="seg" role="group" aria-label="Période de la répartition">
+        <button type="button" data-period="week" aria-pressed="true">Semaine</button>
+        <button type="button" data-period="ytd" aria-pressed="false" id="mix-ytd-btn">Cumul annuel</button>
+      </div>
+    </div>
+    <div class="grid g-3">
+      <div class="card"><div class="card-head"><div><h3>Ventes par catégorie</h3><p class="sub">CA net HT, après retours</p></div></div><div class="donut-wrap" id="donut-categories"></div></div>
+      <div class="card"><div class="card-head"><div><h3>Ventes par pays</h3><p class="sub">CA HT avant retours</p></div></div><div class="donut-wrap" id="donut-countries"></div></div>
+      <div class="card"><div class="card-head"><div><h3>Ventes par canal</h3><p class="sub">CA HT avant retours, par source de visite</p></div></div><div class="donut-wrap" id="donut-channels"></div></div>
+      <div class="card"><div class="card-head"><div><h3>Où va chaque euro de CA</h3><p class="sub">Répartition du CA net HT entre charges et résultat</p></div></div><div class="donut-wrap" id="donut-euro"></div></div>
+      <div class="card"><div class="card-head"><div><h3>Dépenses marketing</h3><p class="sub">Par poste</p></div></div><div class="donut-wrap" id="donut-marketing"></div></div>
+      <div class="card"><div class="card-head"><div><h3>Commandes par type de client</h3><p class="sub">Nouveaux et récurrents</p></div></div><div class="donut-wrap" id="donut-customers"></div></div>
     </div>
   </section>
 
@@ -675,6 +717,69 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
     });
   }
 
+  // ------------------------------------------------------------------ anneau (camembert évidé)
+  const PALETTE = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)', 'var(--s8)'];
+  function donut(container, items, cfg) {
+    // items : [{ name, value, color }] — la couleur suit l'entité (ordre du profil), pas le rang.
+    const fmt = cfg.format || F.eur;
+    const list = items.filter((it) => it.value > 0).sort((a, b) => b.value - a.value);
+    const total = list.reduce((a, it) => a + it.value, 0);
+    container.innerHTML = '';
+    if (!total) { container.innerHTML = '<p class="donut-note">Aucune donnée sur la période.</p>'; return; }
+    const size = 220, cx = size / 2, cy = size / 2, R = 100, r = 66;
+    const holder = document.createElement('div');
+    holder.className = 'donut';
+    container.appendChild(holder);
+    const svg = el('svg', { viewBox: `0 0 ${size} ${size}`, role: 'img', 'aria-label': `${cfg.title} : ${list.map((it) => `${it.name} ${F.pct(it.value / total)}`).join(', ')}` }, holder);
+    const pt = (rad, a) => [cx + rad * Math.sin(a), cy - rad * Math.cos(a)];
+    let a0 = 0;
+    const paths = list.map((it) => {
+      const share = it.value / total;
+      const a1 = a0 + share * Math.PI * 2;
+      let d;
+      if (share >= 0.9999) {
+        d = `M${cx},${cy - R}A${R},${R} 0 1 1 ${cx - 0.01},${cy - R}Z M${cx},${cy - r}A${r},${r} 0 1 0 ${cx + 0.01},${cy - r}Z`;
+      } else {
+        const large = a1 - a0 > Math.PI ? 1 : 0;
+        const [x0, y0] = pt(R, a0), [x1, y1] = pt(R, a1), [x2, y2] = pt(r, a1), [x3, y3] = pt(r, a0);
+        d = `M${x0},${y0}A${R},${R} 0 ${large} 1 ${x1},${y1}L${x2},${y2}A${r},${r} 0 ${large} 0 ${x3},${y3}Z`;
+      }
+      a0 = a1;
+      return el('path', { d, style: `fill:${it.color};stroke:var(--surface);stroke-width:2;stroke-linejoin:round`, 'fill-rule': 'evenodd' }, svg);
+    });
+    const cVal = svgText(svg, cx, cy + 2, cfg.centerValue ? cfg.centerValue(total) : fmt(total), { 'text-anchor': 'middle', class: 'c-val' });
+    const cLab = svgText(svg, cx, cy + 20, cfg.centerLabel || 'Total', { 'text-anchor': 'middle', class: 'c-lab' });
+
+    const legendEl = document.createElement('div');
+    legendEl.className = 'donut-legend';
+    legendEl.innerHTML = list.map((it) => `<div class="row"><i style="background:${it.color}"></i><span title="${esc(it.name)}">${esc(it.name)}</span><b>${fmt(it.value)}</b><em>${F.pct(it.value / total)}</em></div>`).join('');
+    container.appendChild(legendEl);
+    if (cfg.note) { const n = document.createElement('div'); n.className = 'donut-note'; n.textContent = cfg.note; container.appendChild(n); }
+
+    const rows = [...legendEl.children];
+    const focus = (k, evt) => {
+      paths.forEach((p, j) => (p.style.opacity = k == null || j === k ? '1' : '0.35'));
+      rows.forEach((row, j) => row.classList.toggle('on', j === k));
+      if (k == null) {
+        cVal.textContent = cfg.centerValue ? cfg.centerValue(total) : fmt(total);
+        cLab.textContent = cfg.centerLabel || 'Total';
+        hideTip();
+        return;
+      }
+      cVal.textContent = F.pct(list[k].value / total);
+      cLab.textContent = list[k].name.length > 26 ? `${list[k].name.slice(0, 25)}…` : list[k].name;
+      if (evt) showTip(`<div class="tt-title">${esc(list[k].name)}</div>${ttRow(list[k].color, cfg.valueLabel || 'Montant', fmt(list[k].value))}${ttRow(null, 'Part', F.pct(list[k].value / total))}${list[k].extra ? list[k].extra : ''}`, evt);
+    };
+    paths.forEach((p, k) => {
+      p.addEventListener('pointermove', (evt) => focus(k, evt));
+      p.addEventListener('pointerleave', () => focus(null));
+    });
+    rows.forEach((row, k) => {
+      row.addEventListener('pointerenter', () => focus(k));
+      row.addEventListener('pointerleave', () => focus(null));
+    });
+  }
+
   // ------------------------------------------------------------------ mini-courbe
   function sparkline(values, color = 'var(--s1)') {
     const W = 200, H = 30;
@@ -703,6 +808,7 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
     renderTiles(ctx);
     renderRevenue(ctx);
     renderInsights(ctx);
+    renderMix(ctx);
     renderWaterfall(ctx);
     renderMargins(ctx);
     renderPnl(ctx);
@@ -830,6 +936,48 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
     }
     if (inList) html += '</ul>';
     return html;
+  }
+
+  let mixPeriod = 'week';
+  function renderMix(ctx) {
+    const wk = DS.weeks[ctx.week.index];
+    const src = mixPeriod === 'ytd' ? aggregateWeeks(DS.weeks.filter((x) => x.year === wk.year && x.week <= wk.week)) : wk;
+    const t = totals(src);
+    $('mix-ytd-btn').textContent = `Cumul ${wk.year}`;
+    $('mix-period-text').textContent = mixPeriod === 'ytd'
+      ? `Cumul ${wk.year}, semaines 1 à ${wk.week}`
+      : `Semaine ${wk.week} · ${F.date(wk.start)} – ${F.date(wk.end, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    document.querySelectorAll('#mix .seg button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.period === mixPeriod)));
+    const color = (i) => PALETTE[i % PALETTE.length];
+
+    donut($('donut-categories'), src.categories.map((c, i) => ({ name: c.name, value: c.net_ht, color: color(i), extra: ttRow(null, 'Unités', F.int(c.units)) + ttRow(null, 'Marge brute', F.pct(ratio(c.net_ht - c.cogs, c.net_ht))) })), { title: 'Ventes par catégorie', centerLabel: 'CA net HT' });
+
+    donut($('donut-countries'), src.countries.map((c, i) => ({ name: c.name, value: c.revenue_ht, color: color(i), extra: ttRow(null, 'Commandes', F.int(c.orders)) })), { title: 'Ventes par pays', centerLabel: 'CA HT' });
+
+    donut($('donut-channels'), src.channels.map((c, i) => ({ name: c.name, value: c.revenue_ht, color: color(i), extra: ttRow(null, 'Commandes', F.int(c.orders)) + (c.spend ? ttRow(null, 'ROAS', `${F.dec1(c.revenue_ht / c.spend)}×`) : '') })), { title: 'Ventes par canal', centerLabel: 'CA HT' });
+
+    const euro = [
+      { name: "Achats de marchandises", value: t.cogs },
+      { name: 'Logistique (transport, emballages)', value: t.logistics },
+      { name: 'Frais de paiement', value: t.paymentFees },
+      { name: 'Marketing', value: t.marketing },
+      { name: 'Frais fixes', value: t.fixed },
+      { name: 'Amortissements', value: t.depreciation },
+      { name: "Résultat d'exploitation", value: Math.max(0, t.ebit) },
+    ].map((it, i) => Object.assign(it, { color: color(i) }));
+    donut($('donut-euro'), euro, {
+      title: 'Où va chaque euro de CA',
+      centerLabel: 'CA net HT',
+      centerValue: () => F.eur(t.net),
+      note: t.ebit < 0 ? `Résultat négatif (${F.eur(t.ebit)}) : les charges dépassent le CA net.` : `Sur 100 € de CA net, ${F.dec1(t.ebitRate * 100)} € de résultat d'exploitation.`,
+    });
+
+    donut($('donut-marketing'), Object.keys(src.costs.marketing || {}).map((k, i) => ({ name: COST_LABELS.marketing[k] || k, value: src.costs.marketing[k], color: color(i) })), { title: 'Dépenses marketing', centerLabel: 'Marketing', note: `${F.pct(t.marketingRate)} du CA net · ${F.dec1(t.mer)} € de CA par € investi` });
+
+    donut($('donut-customers'), [
+      { name: 'Nouveaux clients', value: t.newCustomers, color: color(0) },
+      { name: 'Clients récurrents', value: t.returningCustomers, color: color(1) },
+    ], { title: 'Commandes par type de client', centerLabel: 'commandes', format: F.int, valueLabel: 'Commandes', note: `Coût d'acquisition d'un nouveau client : ${F.eur2(t.cac)}` });
   }
 
   function renderWaterfall(ctx) {
@@ -1047,6 +1195,11 @@ footer { max-width: 1320px; margin: 0 auto; padding: 0 24px 40px; color: var(--m
       if (e.key === 'ArrowRight') selectWeek(weekIds[weekIds.indexOf(current) + 1]);
     });
     $('print-btn').addEventListener('click', () => window.print());
+    document.querySelectorAll('#mix .seg button').forEach((b) => b.addEventListener('click', () => {
+      if (mixPeriod === b.dataset.period) return;
+      mixPeriod = b.dataset.period;
+      renderMix(buildContext(DS, current));
+    }));
     let saved = null;
     try { saved = localStorage.getItem('reporting-theme'); } catch (e) { /* stockage indisponible */ }
     if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
