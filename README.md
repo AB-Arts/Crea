@@ -9,10 +9,19 @@ Dépôt des skills Claude développées par AB-Arts, et de l'app Next.js qui pub
 
 ## L'app web (Next.js)
 
+Une page par section, toutes générées au build (pages statiques) et adaptées au mobile :
+
 | Route | Contenu |
 |---|---|
-| `/` | Le dashboard, généré au build (page statique) |
+| `/` | Vue d'ensemble |
+| `/repartition` | Répartition (camemberts) |
+| `/rentabilite` | Rentabilité (cascade, marges, compte de résultat) |
+| `/ventes` | Ventes (catégories, produits, pays) |
+| `/acquisition` | Acquisition (tunnel, marketing, canaux) |
+| `/clients` | Clients |
 | `/api/dataset` | Les données brutes du dashboard (JSON) |
+
+La semaine choisie suit d'une page à l'autre grâce au paramètre `?semaine=AAAA-Wss` (ex. `/ventes?semaine=2026-W40`), qu'on peut aussi partager tel quel.
 
 ```bash
 npm install

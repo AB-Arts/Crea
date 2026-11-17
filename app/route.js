@@ -1,11 +1,8 @@
-// Page d'accueil : le dashboard HTML autonome, généré au moment du build (page statique sur Vercel).
-import { renderReport } from '../lib/reporting.mjs';
+// « / » : vue d'ensemble du dashboard, générée au build (page statique sur Vercel).
+import { renderReport, htmlResponse } from '../lib/reporting.mjs';
 
 export const dynamic = 'force-static';
 
 export function GET() {
-  const { html } = renderReport();
-  return new Response(html, {
-    headers: { 'content-type': 'text/html; charset=utf-8' },
-  });
+  return htmlResponse(renderReport('overview').html);
 }

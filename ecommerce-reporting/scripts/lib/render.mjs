@@ -24,8 +24,15 @@ export function validateDataset(ds) {
  * @param {Array}  [o.notes]   analyses rédigées [{ week, title, author, date, body }]
  * @param {string} [o.week]    semaine affichée par défaut (sinon la dernière)
  * @param {string} o.skillDir  chemin absolu du dossier ecommerce-reporting (gabarit, polices, logo)
+ * @param {string} [o.page]    section seule à afficher (mode multi-pages) : overview, mix, profit, sales, acquisition, customers.
+ *                             Absent = fichier unique avec toutes les sections.
+ * @param {object} [o.pages]   URL de chaque section en mode multi-pages, ex. { overview: '/', mix: '/repartition' }
  */
-export function renderDashboard({ dataset, notes = [], week, skillDir }) {
+export const SECTIONS = ['overview', 'mix', 'profit', 'sales', 'acquisition', 'customers'];
+export const SECTION_LABELS = { overview: "Vue d'ensemble", mix: 'Répartition', profit: 'Rentabilité', sales: 'Ventes', acquisition: 'Acquisition', customers: 'Clients' };
+
+export function renderDashboard({ dataset, notes = [], week, skillDir, page, pages }) {
+  if (page && !SECTIONS.includes(page)) throw new Error(`Section inconnue : ${page} (attendu : ${SECTIONS.join(', ')})`);
   const errs = validateDataset(dataset);
   if (errs.length) throw new Error(`Dataset invalide (voir references/data-schema.md) :\n  - ${errs.join('\n  - ')}`);
   const defaultWeek = week || dataset.weeks[dataset.weeks.length - 1].id;
@@ -38,11 +45,14 @@ export function renderDashboard({ dataset, notes = [], week, skillDir }) {
   const logoUri = 'data:image/png;base64,' + read('assets', 'ab-arts-logo.png').toString('base64');
   const metricsSrc = read('scripts', 'lib', 'metrics.mjs').toString('utf8').replace(/^export\s+/gm, '');
 
-  const payload = JSON.stringify({ dataset, notes: list, defaultWeek, generatedAt: new Date().toISOString() })
+  const payload = JSON.stringify({ dataset, notes: list, defaultWeek, generatedAt: new Date().toISOString(), page: page || null, pages: page ? pages || {} : {} })
     .replace(/</g, String.fromCharCode(92) + 'u003c'); // empêche une chaîne « </script> » de fermer la balise
 
-  const title = `${dataset.meta.shop.name} · Reporting S${ctx.week.week} ${ctx.week.year}`;
+  const title = page
+    ? `${dataset.meta.shop.name} · ${SECTION_LABELS[page]} · S${ctx.week.week} ${ctx.week.year}`
+    : `${dataset.meta.shop.name} · Reporting S${ctx.week.week} ${ctx.week.year}`;
   const html = template
+    .replace('<body>', () => (page ? `<body data-page="${page}">` : '<body>'))
     .replace('__TITLE__', () => escapeHtml(title))
     .replace('/*__FONTS__*/', () => fontsCss)
     .replaceAll('__LOGO_DATA_URI__', () => logoUri)
