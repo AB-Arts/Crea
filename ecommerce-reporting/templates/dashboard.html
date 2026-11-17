@@ -1389,8 +1389,12 @@ body[data-page] main { min-height: 60vh; }
   function selectWeek(id) {
     if (!weekIds.includes(id) || id === current) return;
     current = id;
-    if (PAGE) history.replaceState(null, '', `${location.pathname}?semaine=${encodeURIComponent(id)}`);
-    else history.replaceState(null, '', `#${id}`);
+    // Mettre la semaine dans l'URL est un confort : dans un aperçu sandboxé (iframe about:srcdoc,
+    // aperçu de claude.ai, mail…) le navigateur l'interdit, et le dashboard doit continuer à marcher.
+    try {
+      if (PAGE) history.replaceState(null, '', `${location.pathname}?semaine=${encodeURIComponent(id)}`);
+      else history.replaceState(null, '', `#${id}`);
+    } catch (e) { /* URL non modifiable dans ce contexte */ }
     hideTip();
     render();
   }
@@ -1411,7 +1415,7 @@ body[data-page] main { min-height: 60vh; }
       if (e.key === 'ArrowLeft') selectWeek(weekIds[weekIds.indexOf(current) - 1]);
       if (e.key === 'ArrowRight') selectWeek(weekIds[weekIds.indexOf(current) + 1]);
     });
-    $('print-btn').addEventListener('click', () => window.print());
+    $('print-btn').addEventListener('click', () => { try { window.print(); } catch (e) { /* impression bloquée dans un aperçu sandboxé */ } });
     document.querySelectorAll('#mix .seg button').forEach((b) => b.addEventListener('click', () => {
       if (mixPeriod === b.dataset.period) return;
       mixPeriod = b.dataset.period;
