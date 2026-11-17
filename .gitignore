@@ -6,3 +6,9 @@ node_modules/
 .env.local
 .DS_Store
 Thumbs.db
+# Next.js / Vercel
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+next-env.d.ts

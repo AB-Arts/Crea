@@ -134,6 +134,7 @@ Les noms de boutique et de produits des profils de test doivent être inventés 
 - `scripts/generate-fake-data.mjs` : génère `dataset.json` à partir d'un profil.
 - `scripts/kpi.mjs` : résumé chiffré d'une semaine (texte ou `--json`).
 - `scripts/build-report.mjs` : assemble le dashboard HTML (`--notes` optionnel).
+- `scripts/lib/render.mjs` : rendu du dashboard (partagé avec l'app Next.js à la racine du dépôt, déployable sur Vercel).
 - `scripts/lib/metrics.mjs` : calculs (source unique, aussi injectée dans le HTML).
 - `scripts/lib/weeks.mjs`, `scripts/lib/rng.mjs` : semaines ISO, aléatoire déterministe.
 - `templates/dashboard.html` : gabarit du dashboard à la charte AB-Arts (bandeau sombre, accent ember, Geist / Geist Mono, graphiques SVG faits main, sans bibliothèque).

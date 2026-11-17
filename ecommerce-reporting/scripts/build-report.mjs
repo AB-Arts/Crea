@@ -10,66 +10,31 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildContext } from './lib/metrics.mjs';
+import { renderDashboard } from './lib/render.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
+const skillDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = parseArgs(process.argv.slice(2));
 if (!args.dataset) fail('Option --dataset requise (chemin vers dataset.json)');
 
 const datasetPath = path.resolve(args.dataset);
 const dataset = JSON.parse(fs.readFileSync(datasetPath, 'utf8'));
-validate(dataset);
+const notes = args.notes ? JSON.parse(fs.readFileSync(path.resolve(args.notes), 'utf8')) : [];
 
-const week = args.week || dataset.weeks[dataset.weeks.length - 1].id;
-let ctx;
-try { ctx = buildContext(dataset, week); } catch (e) { fail(e.message); }
-
-let notes = [];
-if (args.notes) {
-  const raw = JSON.parse(fs.readFileSync(path.resolve(args.notes), 'utf8'));
-  notes = Array.isArray(raw) ? raw : [raw];
-  for (const n of notes) if (!n.week) n.week = week;
+let result;
+try {
+  result = renderDashboard({ dataset, notes, week: args.week, skillDir });
+} catch (e) {
+  fail(e.message);
 }
+const { html, week } = result;
 
-const template = fs.readFileSync(path.join(here, '..', 'templates', 'dashboard.html'), 'utf8');
-const fontsCss = fs.readFileSync(path.join(here, '..', 'assets', 'fonts', 'geist-fontface.css'), 'utf8');
-const logoUri = 'data:image/png;base64,' + fs.readFileSync(path.join(here, '..', 'assets', 'ab-arts-logo.png')).toString('base64');
-const metricsSrc = fs.readFileSync(path.join(here, 'lib', 'metrics.mjs'), 'utf8').replace(/^export\s+/gm, '');
-
-const payload = JSON.stringify({ dataset, notes, defaultWeek: week, generatedAt: new Date().toISOString() })
-  .replace(/</g, String.fromCharCode(92) + 'u003c'); // empêche une chaîne « </script> » de fermer la balise
-
-const title = `${dataset.meta.shop.name} · Reporting S${ctx.week.week} ${ctx.week.year}`;
-const html = template
-  .replace('__TITLE__', () => escapeHtml(title))
-  .replace('/*__FONTS__*/', () => fontsCss)
-  .replaceAll('__LOGO_DATA_URI__', () => logoUri)
-  .replace('/*__METRICS_LIB__*/', () => metricsSrc)
-  .replace('__REPORT_DATA__', () => payload);
-
-const outFile = path.resolve(args.out || path.join(path.dirname(datasetPath), `dashboard-${week}.html`));
+const outFile = path.resolve(args.out || path.join(path.dirname(datasetPath), `dashboard-${week.id}.html`));
 fs.mkdirSync(path.dirname(outFile), { recursive: true });
 fs.writeFileSync(outFile, html);
 
 const kb = (Buffer.byteLength(html) / 1024).toFixed(0);
 console.log(`✔ Dashboard écrit : ${outFile} (${kb} Ko)`);
-console.log(`  Semaine affichée par défaut : ${week} (${ctx.week.start} → ${ctx.week.end})${notes.length ? ` · ${notes.length} note(s) d'analyse` : ''}`);
-
-// ---------------------------------------------------------------------------
-function validate(ds) {
-  const errs = [];
-  if (!ds.meta?.shop?.name) errs.push('meta.shop.name manquant');
-  if (!Array.isArray(ds.weeks) || !ds.weeks.length) errs.push('weeks[] vide ou absent');
-  for (const w of ds.weeks || []) {
-    for (const k of ['id', 'year', 'week', 'start', 'end', 'traffic', 'sales', 'costs']) if (w[k] == null) errs.push(`${w.id || '?'} : champ "${k}" manquant`);
-    if (errs.length > 10) break;
-  }
-  if (errs.length) fail(`Dataset invalide (voir references/data-schema.md) :\n  - ${errs.join('\n  - ')}`);
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
+console.log(`  Semaine affichée par défaut : ${week.id} (${week.start} → ${week.end})${result.notes.length ? ` · ${result.notes.length} note(s) d'analyse` : ''}`);
 
 function parseArgs(argv) {
   const o = {};
